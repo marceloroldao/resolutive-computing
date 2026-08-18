@@ -1,8 +1,8 @@
 """Run a versioned Resolutive Computing reference experiment.
 
-The runner reads a JSON experiment specification, executes all configured
-benchmarks/optimizers/dimensions/seeds under the declared evaluation budgets,
-and writes raw results plus a metadata manifest and aggregated summary.
+The runner reads a JSON experiment specification, validates it, executes all
+configured benchmarks/optimizers/dimensions/seeds under the declared evaluation
+budgets, and writes raw results plus a metadata manifest and aggregated summary.
 """
 
 from __future__ import annotations
@@ -29,6 +29,63 @@ OPTIMIZERS = {
     "RO-V5": ResolutiveV5,
 }
 
+REQUIRED_KEYS = {
+    "schema_version",
+    "experiment_id",
+    "status",
+    "rsms_compatibility",
+    "benchmarks",
+    "optimizers",
+    "dimensions",
+    "classical_budget",
+    "scaling_budget_per_dimension",
+    "seeds",
+    "seed_policy",
+    "metrics",
+    "claim_policy",
+}
+
+
+def validate_config(config: dict[str, object]) -> None:
+    missing = REQUIRED_KEYS.difference(config)
+    if missing:
+        raise ValueError(f"missing required experiment keys: {sorted(missing)}")
+
+    if int(config["schema_version"]) != 1:
+        raise ValueError("unsupported schema_version; expected 1")
+    if not str(config["experiment_id"]).strip():
+        raise ValueError("experiment_id must be non-empty")
+    if int(config["seeds"]) < 1:
+        raise ValueError("seeds must be >= 1")
+    if int(config["classical_budget"]) < 1:
+        raise ValueError("classical_budget must be >= 1")
+    if int(config["scaling_budget_per_dimension"]) < 1:
+        raise ValueError("scaling_budget_per_dimension must be >= 1")
+
+    dimensions = list(config["dimensions"])
+    if not dimensions or any(int(d) < 1 for d in dimensions):
+        raise ValueError("dimensions must contain positive integers")
+
+    benchmarks = list(config["benchmarks"])
+    if not benchmarks:
+        raise ValueError("benchmarks must not be empty")
+    unknown_benchmarks = sorted(set(benchmarks).difference(DEFAULT_BENCHMARKS))
+    if unknown_benchmarks:
+        raise ValueError(f"unknown benchmarks: {unknown_benchmarks}")
+
+    optimizers = list(config["optimizers"])
+    if not optimizers:
+        raise ValueError("optimizers must not be empty")
+    unknown_optimizers = sorted(set(optimizers).difference(OPTIMIZERS))
+    if unknown_optimizers:
+        raise ValueError(f"unknown optimizers: {unknown_optimizers}")
+
+    expected_seed_policy = f"integer seeds 0..{int(config['seeds']) - 1} inclusive"
+    if str(config["seed_policy"]) != expected_seed_policy:
+        raise ValueError(
+            f"seed_policy inconsistent with seeds; expected {expected_seed_policy!r}"
+        )
+
 
 def _git_sha() -> str:
     env_sha = os.environ.get("GITHUB_SHA")
@@ -42,6 +99,7 @@ def _git_sha() -> str:
 
 def run(config_path: Path, output_dir: Path, smoke: bool = False) -> None:
     config = json.loads(config_path.read_text(encoding="utf-8"))
+    validate_config(config)
     experiment_id = config["experiment_id"]
     output_dir.mkdir(parents=True, exist_ok=True)
 
