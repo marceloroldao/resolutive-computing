@@ -19,6 +19,7 @@ See [`RSMS_COMPATIBILITY.md`](RSMS_COMPATIBILITY.md).
 - Reproducible multi-seed experiments
 - Controlled RO-V5 ablation studies
 - Dimensional scaling tests
+- Versioned reference-experiment manifests
 - Future COCO/BBOB integration
 
 ## Scientific principles
@@ -56,7 +57,17 @@ Run a controlled RO-V5 ablation study:
 python benchmarks/run_ablation.py --dimension 10 --budget 6000 --seeds 16
 ```
 
-Generated quantitative results should be stored under `results/` and associated with the exact commit, configuration, and seed set used to produce them.
+Run the versioned reference experiment declared in `experiments/reference_v0.1.json`:
+
+```bash
+python experiments/run_reference.py \
+  --config experiments/reference_v0.1.json \
+  --output-dir results/reference-v0.1
+```
+
+The reference runner writes `raw.csv`, `summary.csv`, and `manifest.json`. The manifest records the exact experiment ID, RSMS compatibility, source commit and claim policy used for the run.
+
+Generated quantitative results should be stored under `results/` and associated with the exact commit, configuration, seed set, and evaluation budget used to produce them.
 
 ## Current reference methods
 
