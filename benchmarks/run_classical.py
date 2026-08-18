@@ -9,12 +9,18 @@ from pathlib import Path
 import numpy as np
 
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
+from resolutive.optimization.baselines import RandomSearch, SimulatedAnnealing
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
 
 
 def run(dimension: int, budget: int, seeds: int, output: Path) -> None:
-    optimizers = {"RO-V2": ResolutiveV2(), "RO-V5": ResolutiveV5()}
+    optimizers = {
+        "RandomSearch": RandomSearch(),
+        "SimulatedAnnealing": SimulatedAnnealing(),
+        "RO-V2": ResolutiveV2(),
+        "RO-V5": ResolutiveV5(),
+    }
     rows = []
     for benchmark_name, (objective, bounds) in DEFAULT_BENCHMARKS.items():
         for optimizer_name, optimizer in optimizers.items():
