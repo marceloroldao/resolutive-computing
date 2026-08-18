@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
-from resolutive.optimization.baselines import RandomSearch, SimulatedAnnealing
+from resolutive.optimization.baselines import DifferentialEvolution, RandomSearch, SimulatedAnnealing
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
 
@@ -18,6 +18,7 @@ def run(dimension: int, budget: int, seeds: int, output: Path) -> None:
     optimizers = {
         "RandomSearch": RandomSearch(),
         "SimulatedAnnealing": SimulatedAnnealing(),
+        "DifferentialEvolution": DifferentialEvolution(),
         "RO-V2": ResolutiveV2(),
         "RO-V5": ResolutiveV5(),
     }
