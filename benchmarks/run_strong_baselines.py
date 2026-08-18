@@ -17,6 +17,7 @@ from scipy.optimize import differential_evolution
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
+from resolutive.optimization.v6 import ResolutiveV6
 
 
 def _cma_es(objective, dimension, bounds, budget, seed):
@@ -42,7 +43,6 @@ def _cma_es(objective, dimension, bounds, budget, seed):
 
 
 def _scipy_de(objective, dimension, bounds, budget, seed):
-    # popsize * dimension evaluations per generation. polish=False preserves budget.
     popsize = 10
     pop_n = popsize * dimension
     maxiter = max(0, budget // pop_n - 1)
@@ -55,11 +55,8 @@ def _scipy_de(objective, dimension, bounds, budget, seed):
 
 
 def run(dimension: int, budget: int, seeds: int, output: Path) -> None:
-    methods = {
-        "CMA-ES(pycma)": _cma_es,
-        "DE(scipy)": _scipy_de,
-    }
-    ro = {"RO-V2": ResolutiveV2(), "RO-V5": ResolutiveV5()}
+    methods = {"CMA-ES(pycma)": _cma_es, "DE(scipy)": _scipy_de}
+    ro = {"RO-V2": ResolutiveV2(), "RO-V5": ResolutiveV5(), "RO-V6": ResolutiveV6()}
     rows = []
     for benchmark_name, (objective, bounds) in DEFAULT_BENCHMARKS.items():
         for name in [*methods, *ro]:
