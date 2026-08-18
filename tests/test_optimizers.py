@@ -1,3 +1,6 @@
+import numpy as np
+import pytest
+
 from resolutive.benchmarks.functions import ackley
 from resolutive.optimization.baselines import RandomSearch, SimulatedAnnealing
 from resolutive.optimization.v2 import ResolutiveV2
@@ -36,6 +39,19 @@ def test_v5_respects_budget_and_improves_ackley():
     assert result.fun < 10.0
 
 
+def test_v5_is_reproducible_for_fixed_seed():
+    optimizer = ResolutiveV5(population=20)
+    first = optimizer.minimize(
+        ackley, dimension=4, bounds=(-32.768, 32.768), budget=600, seed=7
+    )
+    second = optimizer.minimize(
+        ackley, dimension=4, bounds=(-32.768, 32.768), budget=600, seed=7
+    )
+    assert first.evaluations == second.evaluations
+    assert first.fun == second.fun
+    assert np.array_equal(first.x, second.x)
+
+
 def test_v5_ablation_switches_preserve_budget_contract():
     variants = [
         {"use_memory": False},
@@ -50,3 +66,20 @@ def test_v5_ablation_switches_preserve_budget_contract():
         )
         assert result.evaluations <= 400
         assert result.fun >= 0.0
+
+
+def test_optimizers_reject_invalid_scalar_bounds():
+    for optimizer in (RandomSearch(), SimulatedAnnealing(), ResolutiveV2(), ResolutiveV5()):
+        with pytest.raises(ValueError):
+            optimizer.minimize(ackley, dimension=4, bounds=(1.0, 1.0), budget=100, seed=0)
+
+
+def test_resolutive_optimizers_reject_too_small_budget():
+    with pytest.raises(ValueError):
+        ResolutiveV2(population=16).minimize(
+            ackley, dimension=4, bounds=(-1.0, 1.0), budget=16, seed=0
+        )
+    with pytest.raises(ValueError):
+        ResolutiveV5(population=20).minimize(
+            ackley, dimension=4, bounds=(-1.0, 1.0), budget=20, seed=0
+        )
