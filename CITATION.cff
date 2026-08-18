@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "Resolutive Computing"
+message: "If you use this software or research framework, cite the exact release or commit used."
+type: software
+authors:
+  - family-names: "Matos"
+    given-names: "Marcelo Roldão"
+    orcid: "https://orcid.org/0009-0003-6075-4680"
+repository-code: "https://github.com/marceloroldao/resolutive-computing"
+license: "LicenseRef-RRNCL-1.0"
