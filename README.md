@@ -20,6 +20,7 @@ See [`RSMS_COMPATIBILITY.md`](RSMS_COMPATIBILITY.md).
 - Controlled RO-V5 ablation studies
 - Dimensional scaling tests
 - Shifted/rotated, noisy, and short-budget generalization tests
+- Engineering application benchmarks: PID control and synthetic photovoltaic MPPT
 - Versioned reference-experiment manifests
 - Future COCO/BBOB integration
 
@@ -70,6 +71,20 @@ python benchmarks/run_generalization.py \
 ```
 
 For noisy cases, optimization uses noisy observations but the reported final score is evaluated on the underlying noise-free transformed objective. This separates robustness to measurement noise from the noise realization itself.
+
+Run the synthetic PID control benchmark:
+
+```bash
+python benchmarks/run_pid_control.py --budget 1000 --seeds 16
+```
+
+Run the synthetic photovoltaic MPPT benchmark, including a multi-peak partial-shading case:
+
+```bash
+python benchmarks/run_mppt.py --budget 500 --seeds 16
+```
+
+The engineering application models are deterministic research benchmarks. They are not presented as hardware-qualified controllers or high-fidelity device simulators.
 
 Run the versioned reference experiment declared in `experiments/reference_v0.1.json`:
 
