@@ -18,6 +18,7 @@ from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
 from resolutive.optimization.v6 import ResolutiveV6
+from resolutive.optimization.v7 import ResolutiveV7
 
 
 def _cma_es(objective, dimension, bounds, budget, seed):
@@ -56,7 +57,12 @@ def _scipy_de(objective, dimension, bounds, budget, seed):
 
 def run(dimension: int, budget: int, seeds: int, output: Path) -> None:
     methods = {"CMA-ES(pycma)": _cma_es, "DE(scipy)": _scipy_de}
-    ro = {"RO-V2": ResolutiveV2(), "RO-V5": ResolutiveV5(), "RO-V6": ResolutiveV6()}
+    ro = {
+        "RO-V2": ResolutiveV2(),
+        "RO-V5": ResolutiveV5(),
+        "RO-V6": ResolutiveV6(),
+        "RO-V7": ResolutiveV7(),
+    }
     rows = []
     for benchmark_name, (objective, bounds) in DEFAULT_BENCHMARKS.items():
         for name in [*methods, *ro]:
