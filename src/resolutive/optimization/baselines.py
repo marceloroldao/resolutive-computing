@@ -92,3 +92,81 @@ class SimulatedAnnealing:
                     best_value = value
 
         return OptimizationResult(best, best_value, used, seed, "SimulatedAnnealing")
+
+
+class DifferentialEvolution:
+    """Exact-budget DE/rand/1/bin reference implementation.
+
+    The implementation evaluates one trial vector at a time after population
+    initialization, so the reported budget is an exact objective-call count.
+    """
+
+    def __init__(
+        self,
+        *,
+        population_multiplier: int = 8,
+        mutation: float = 0.8,
+        crossover: float = 0.9,
+    ) -> None:
+        if population_multiplier < 1:
+            raise ValueError("population_multiplier must be >= 1")
+        if not 0.0 < mutation <= 2.0:
+            raise ValueError("mutation must be in (0, 2]")
+        if not 0.0 <= crossover <= 1.0:
+            raise ValueError("crossover must be in [0, 1]")
+        self.population_multiplier = int(population_multiplier)
+        self.mutation = float(mutation)
+        self.crossover = float(crossover)
+
+    def minimize(
+        self,
+        objective: Objective,
+        *,
+        dimension: int,
+        bounds: tuple[float, float],
+        budget: int = 6000,
+        seed: int = 0,
+    ) -> OptimizationResult:
+        if dimension < 1:
+            raise ValueError("dimension must be >= 1")
+        lo, hi = validate_bounds(bounds)
+        minimum_population = 4
+        requested_population = max(minimum_population, self.population_multiplier * dimension)
+        if budget < minimum_population:
+            raise ValueError("budget must be >= 4 for differential evolution")
+        population_size = min(requested_population, budget)
+
+        rng = np.random.default_rng(seed)
+        population = rng.uniform(lo, hi, (population_size, dimension))
+        values = np.array([objective(row) for row in population], dtype=float)
+        used = population_size
+        target_index = 0
+
+        while used < budget:
+            available = np.delete(np.arange(population_size), target_index)
+            if available.size < 3:
+                raise RuntimeError("differential evolution requires at least four population members")
+            a, b, c = rng.choice(available, 3, replace=False)
+            mutant = population[a] + self.mutation * (population[b] - population[c])
+            mutant = np.clip(mutant, lo, hi)
+
+            crossover_mask = rng.random(dimension) < self.crossover
+            crossover_mask[rng.integers(dimension)] = True
+            trial = np.where(crossover_mask, mutant, population[target_index])
+            trial_value = float(objective(trial))
+            used += 1
+
+            if trial_value <= values[target_index]:
+                population[target_index] = trial
+                values[target_index] = trial_value
+
+            target_index = (target_index + 1) % population_size
+
+        best_index = int(np.argmin(values))
+        return OptimizationResult(
+            population[best_index].copy(),
+            float(values[best_index]),
+            used,
+            seed,
+            "DifferentialEvolution",
+        )
