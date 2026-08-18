@@ -28,3 +28,12 @@ jobs:
         run: python -m pip install -e ".[test,bench]"
       - name: Test
         run: python -m pytest -q
+      - name: Classical benchmark smoke
+        if: matrix.python-version == '3.12'
+        run: python benchmarks/run_classical.py --dimension 4 --budget 600 --seeds 2 --output /tmp/classical.csv
+      - name: Scaling benchmark smoke
+        if: matrix.python-version == '3.12'
+        run: python benchmarks/run_scaling.py --dimensions 4 6 --budget-per-dimension 100 --seeds 1 --output /tmp/scaling.csv
+      - name: Ablation benchmark smoke
+        if: matrix.python-version == '3.12'
+        run: python benchmarks/run_ablation.py --dimension 4 --budget 600 --seeds 1 --output /tmp/ablation.csv
