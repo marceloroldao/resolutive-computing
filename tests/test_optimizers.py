@@ -1,6 +1,23 @@
 from resolutive.benchmarks.functions import ackley
+from resolutive.optimization.baselines import RandomSearch, SimulatedAnnealing
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
+
+
+def test_random_search_uses_exact_budget():
+    result = RandomSearch().minimize(
+        ackley, dimension=4, bounds=(-32.768, 32.768), budget=123, seed=1
+    )
+    assert result.evaluations == 123
+    assert result.fun >= 0.0
+
+
+def test_simulated_annealing_uses_exact_budget():
+    result = SimulatedAnnealing().minimize(
+        ackley, dimension=4, bounds=(-32.768, 32.768), budget=123, seed=1
+    )
+    assert result.evaluations == 123
+    assert result.fun >= 0.0
 
 
 def test_v2_respects_budget_and_improves_ackley():
