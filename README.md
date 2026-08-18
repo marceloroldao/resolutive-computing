@@ -6,15 +6,19 @@ The project begins with the Resolutive Optimizer family (RO), developed as a rep
 
 ## Status
 
-Early research framework. Results must be reproduced from code before being treated as scientific evidence.
+Experimental research framework. Results must be reproduced from versioned repository code before being treated as scientific evidence.
+
+**RSMS compatibility:** `1.0-rc.1`  
+See [`RSMS_COMPATIBILITY.md`](RSMS_COMPATIBILITY.md).
 
 ## Initial scope
 
 - Resolutive Optimizer implementations (RO-V2 and RO-V5)
 - Continuous black-box benchmark functions
+- Budget-matched classical baselines
 - Reproducible multi-seed experiments
-- Ablation studies
 - Dimensional scaling tests
+- Planned ablation studies
 - Future COCO/BBOB integration
 
 ## Scientific principles
@@ -25,10 +29,42 @@ Early research framework. Results must be reproduced from code before being trea
 4. Ablation before attributing gains to a mechanism.
 5. No benchmark claim without reproducible code and recorded configuration.
 6. Keep experimental results separate from theoretical interpretation.
+7. Preserve favorable, neutral, and negative results under the same reporting standard.
+
+## Quick start
+
+```bash
+python -m pip install -e ".[test,bench]"
+python -m pytest -q
+```
+
+Run the classical 10-dimensional benchmark suite:
+
+```bash
+python benchmarks/run_classical.py --dimension 10 --budget 6000 --seeds 16
+```
+
+Run a dimensional scaling experiment:
+
+```bash
+python benchmarks/run_scaling.py --dimensions 10 20 30 50 --budget-per-dimension 600 --seeds 8
+```
+
+Generated quantitative results should be stored under `results/` and associated with the exact commit, configuration, and seed set used to produce them.
+
+## Current reference methods
+
+- `RandomSearch` — exact-budget uniform random baseline.
+- `SimulatedAnnealing` — exact-budget stochastic local/global baseline.
+- `RO-V2` — single-funnel resolutive baseline with coherence-controlled exploration and coordinate collapse.
+- `RO-V5` — hybrid resolutive engine with stagnation-triggered multi-funnel escape.
+
+Reference baselines are intentionally simple at this stage and are not presented as state-of-the-art competitors. Stronger external baselines will be added under the same evaluation-budget contract.
 
 ## Author
 
-Marcelo Roldão Matos
+Marcelo Roldão Matos  
+ORCID: 0009-0003-6075-4680
 
 ## License
 
