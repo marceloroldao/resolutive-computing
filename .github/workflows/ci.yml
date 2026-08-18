@@ -49,3 +49,9 @@ jobs:
       - name: Versioned reference experiment smoke
         if: matrix.python-version == '3.12'
         run: python experiments/run_reference.py --config experiments/reference_v0.1.json --output-dir /tmp/reference-v0.1 --smoke
+      - name: Controlled 10D comparison campaign
+        if: matrix.python-version == '3.12'
+        run: |
+          python benchmarks/run_classical.py --dimension 10 --budget 3000 --seeds 8 --output /tmp/reference_campaign_10d.csv
+          echo '=== REFERENCE CAMPAIGN 10D ==='
+          cat /tmp/reference_campaign_10d.csv
