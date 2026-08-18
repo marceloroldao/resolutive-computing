@@ -43,6 +43,9 @@ jobs:
       - name: PID control application smoke
         if: matrix.python-version == '3.12'
         run: python benchmarks/run_pid_control.py --budget 300 --seeds 1 --output /tmp/pid_control.csv
+      - name: MPPT application smoke
+        if: matrix.python-version == '3.12'
+        run: python benchmarks/run_mppt.py --budget 120 --seeds 1 --output /tmp/mppt.csv
       - name: Versioned reference experiment smoke
         if: matrix.python-version == '3.12'
         run: python experiments/run_reference.py --config experiments/reference_v0.1.json --output-dir /tmp/reference-v0.1 --smoke
