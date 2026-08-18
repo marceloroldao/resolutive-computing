@@ -32,4 +32,10 @@ Marcelo Roldão Matos
 
 ## License
 
-License policy is intentionally not finalized yet. Do not assume open-source reuse rights until a license is explicitly added.
+Copyright (c) 2026 Marcelo Roldão Matos.
+
+Resolutive Computing is **source-available for academic, educational, scientific research, evaluation, and other qualifying non-commercial use** under the terms in [`LICENSE`](LICENSE).
+
+Commercial use is not granted by the public license and requires prior written authorization under a separate commercial agreement. See [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md).
+
+Because commercial use is restricted, this project should **not** be described as OSI-approved open source.
