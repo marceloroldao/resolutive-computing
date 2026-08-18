@@ -17,8 +17,8 @@ See [`RSMS_COMPATIBILITY.md`](RSMS_COMPATIBILITY.md).
 - Continuous black-box benchmark functions
 - Budget-matched classical baselines
 - Reproducible multi-seed experiments
+- Controlled RO-V5 ablation studies
 - Dimensional scaling tests
-- Planned ablation studies
 - Future COCO/BBOB integration
 
 ## Scientific principles
@@ -50,16 +50,23 @@ Run a dimensional scaling experiment:
 python benchmarks/run_scaling.py --dimensions 10 20 30 50 --budget-per-dimension 600 --seeds 8
 ```
 
+Run a controlled RO-V5 ablation study:
+
+```bash
+python benchmarks/run_ablation.py --dimension 10 --budget 6000 --seeds 16
+```
+
 Generated quantitative results should be stored under `results/` and associated with the exact commit, configuration, and seed set used to produce them.
 
 ## Current reference methods
 
 - `RandomSearch` — exact-budget uniform random baseline.
 - `SimulatedAnnealing` — exact-budget stochastic local/global baseline.
+- `DifferentialEvolution` — exact-budget `DE/rand/1/bin` baseline.
 - `RO-V2` — single-funnel resolutive baseline with coherence-controlled exploration and coordinate collapse.
 - `RO-V5` — hybrid resolutive engine with stagnation-triggered multi-funnel escape.
 
-Reference baselines are intentionally simple at this stage and are not presented as state-of-the-art competitors. Stronger external baselines will be added under the same evaluation-budget contract.
+The classical baselines are reference implementations under the same objective-call budget. They are not yet a complete state-of-the-art benchmark panel; COCO/BBOB and additional established optimizers remain part of the validation roadmap.
 
 ## Author
 
