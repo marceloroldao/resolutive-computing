@@ -6,6 +6,7 @@ from resolutive.optimization.baselines import DifferentialEvolution, RandomSearc
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
 from resolutive.optimization.v6 import ResolutiveV6
+from resolutive.optimization.v7 import ResolutiveV7
 
 
 def test_random_search_uses_exact_budget():
@@ -56,6 +57,14 @@ def test_v6_respects_budget_and_improves_ackley():
     assert result.fun < 10.0
 
 
+def test_v7_respects_budget_and_improves_ackley():
+    result = ResolutiveV7(population=20).minimize(
+        ackley, dimension=4, bounds=(-32.768, 32.768), budget=600, seed=1
+    )
+    assert result.evaluations <= 600
+    assert result.fun < 10.0
+
+
 def test_v5_is_reproducible_for_fixed_seed():
     optimizer = ResolutiveV5(population=20)
     first = optimizer.minimize(
@@ -71,6 +80,19 @@ def test_v5_is_reproducible_for_fixed_seed():
 
 def test_v6_is_reproducible_for_fixed_seed():
     optimizer = ResolutiveV6(population=20)
+    first = optimizer.minimize(
+        ackley, dimension=4, bounds=(-32.768, 32.768), budget=600, seed=7
+    )
+    second = optimizer.minimize(
+        ackley, dimension=4, bounds=(-32.768, 32.768), budget=600, seed=7
+    )
+    assert first.evaluations == second.evaluations
+    assert first.fun == second.fun
+    assert np.array_equal(first.x, second.x)
+
+
+def test_v7_is_reproducible_for_fixed_seed():
+    optimizer = ResolutiveV7(population=20)
     first = optimizer.minimize(
         ackley, dimension=4, bounds=(-32.768, 32.768), budget=600, seed=7
     )
@@ -106,6 +128,7 @@ def test_optimizers_reject_invalid_scalar_bounds():
         ResolutiveV2(),
         ResolutiveV5(),
         ResolutiveV6(),
+        ResolutiveV7(),
     )
     for optimizer in optimizers:
         with pytest.raises(ValueError):
@@ -123,6 +146,10 @@ def test_resolutive_optimizers_reject_too_small_budget():
         )
     with pytest.raises(ValueError):
         ResolutiveV6(population=20).minimize(
+            ackley, dimension=4, bounds=(-1.0, 1.0), budget=20, seed=0
+        )
+    with pytest.raises(ValueError):
+        ResolutiveV7(population=20).minimize(
             ackley, dimension=4, bounds=(-1.0, 1.0), budget=20, seed=0
         )
 
