@@ -6,7 +6,19 @@ The project begins with the Resolutive Optimizer family (RO), developed as a rep
 
 ## Status
 
-Early research framework. Results must be reproduced from code before being treated as scientific evidence.
+**Maturity:** experimental / alpha research framework.
+
+Results must be reproduced from code before being treated as scientific or engineering evidence. Computational performance does not validate any underlying physical interpretation.
+
+## Relationship to Resolutive Science
+
+`resolutive-science` is the normative source of truth for shared Resolutive Science terminology, notation and scientific-status conventions.
+
+- Resolutive Science repository baseline: `v0.1.1`
+- RSMS compatibility: `1.0-rc.1` — candidate compatibility, subject to re-audit when RSMS 1.0 becomes stable
+- Project governance baseline: `RSPS 1.0-draft`
+
+Resolutive Computing may use computational constructs inspired by Resolutive Science, but such constructs are engineering hypotheses unless separately established by scientific evidence. Any project-specific semantic deviation from RSMS must be documented rather than silently redefining a shared term.
 
 ## Initial scope
 
@@ -25,11 +37,19 @@ Early research framework. Results must be reproduced from code before being trea
 4. Ablation before attributing gains to a mechanism.
 5. No benchmark claim without reproducible code and recorded configuration.
 6. Keep experimental results separate from theoretical interpretation.
+7. Preserve scientifically relevant negative or inconclusive results.
+
+## Licensing
+
+This repository is source-available for academic, educational and non-commercial research use under `LICENSE`.
+
+Commercial use requires separate written authorization or a commercial license from the rights holder. Because commercial use is restricted, this project must not be described as OSI-approved open-source software.
+
+## Citation
+
+Citation metadata is provided in `CITATION.cff`. Cite the exact release or commit used until an archival DOI is assigned.
 
 ## Author
 
-Marcelo Roldão Matos
-
-## License
-
-License policy is intentionally not finalized yet. Do not assume open-source reuse rights until a license is explicitly added.
+Marcelo Roldão Matos  
+ORCID: 0009-0003-6075-4680
