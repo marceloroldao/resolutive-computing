@@ -55,3 +55,9 @@ jobs:
           python benchmarks/run_classical.py --dimension 10 --budget 3000 --seeds 8 --output /tmp/reference_campaign_10d.csv
           echo '=== REFERENCE CAMPAIGN 10D ==='
           cat /tmp/reference_campaign_10d.csv
+      - name: Strong external baselines 10D
+        if: matrix.python-version == '3.12'
+        run: |
+          python benchmarks/run_strong_baselines.py --dimension 10 --budget 3000 --seeds 8 --output /tmp/strong_baselines_10d.csv
+          echo '=== STRONG BASELINES 10D ==='
+          cat /tmp/strong_baselines_10d.csv
