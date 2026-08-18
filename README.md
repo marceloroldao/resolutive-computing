@@ -19,6 +19,7 @@ See [`RSMS_COMPATIBILITY.md`](RSMS_COMPATIBILITY.md).
 - Reproducible multi-seed experiments
 - Controlled RO-V5 ablation studies
 - Dimensional scaling tests
+- Shifted/rotated, noisy, and short-budget generalization tests
 - Versioned reference-experiment manifests
 - Future COCO/BBOB integration
 
@@ -56,6 +57,19 @@ Run a controlled RO-V5 ablation study:
 ```bash
 python benchmarks/run_ablation.py --dimension 10 --budget 6000 --seeds 16
 ```
+
+Run generalization tests with deterministic shifted/rotated instances, reproducible additive noise, and a short-budget case:
+
+```bash
+python benchmarks/run_generalization.py \
+  --dimension 10 \
+  --budget 6000 \
+  --seeds 8 \
+  --instance-seed 2026 \
+  --noise-fraction 0.01
+```
+
+For noisy cases, optimization uses noisy observations but the reported final score is evaluated on the underlying noise-free transformed objective. This separates robustness to measurement noise from the noise realization itself.
 
 Run the versioned reference experiment declared in `experiments/reference_v0.1.json`:
 
