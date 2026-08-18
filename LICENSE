@@ -1,70 +1,27 @@
-Resolutive Computing Research and Non-Commercial License v1.0
+RESOLUTIVE RESEARCH AND NON-COMMERCIAL LICENSE (RRNCL) v1.0
 
-Copyright (c) 2026 Marcelo Roldão Matos. All rights reserved.
+Copyright (c) 2026 Marcelo Roldão Matos. All rights reserved except as expressly granted below.
 
-1. PURPOSE
+1. PERMITTED USE
+Permission is granted, free of charge, to use, copy, study, reproduce, modify and redistribute this work for academic research, scientific research, education, teaching, personal experimentation, evaluation and other non-commercial research activities.
 
-This license permits use of Resolutive Computing for academic, educational, scientific research, evaluation, and other non-commercial purposes, subject to the conditions below. Commercial exploitation requires a separate written commercial license from the copyright holder.
+2. CONDITIONS
+Redistributions, substantial copies and derivative works must retain this license and copyright notice, provide reasonable attribution to Marcelo Roldão Matos and the official repository, identify material modifications, preserve applicable citation notices, and must not imply endorsement or official-project status for modified versions.
 
-2. PERMITTED NON-COMMERCIAL USE
+3. COMMERCIAL USE
+No commercial-use rights are granted. Commercial use includes use in paid products or services, SaaS, proprietary integration, consulting deliverables, production systems, monetized redistribution, or internal business operations intended to support commercial advantage. Any such use requires prior written authorization under a separate commercial license from the rights holder.
 
-Subject to this license, you may use, copy, study, modify, and redistribute the software and associated documentation solely for:
+4. THIRD-PARTY CONTENT
+Third-party datasets, dependencies and externally sourced materials retain their original licenses and are not relicensed by this license.
 
-(a) academic research;
-(b) education and teaching;
-(c) scientific evaluation and reproducibility;
-(d) personal non-commercial experimentation; and
-(e) non-commercial research conducted by universities, schools, public research institutions, and non-profit organizations.
+5. PATENTS AND TRADEMARKS
+No patent, trademark or branding rights are granted by implication. Any commercial patent rights, if applicable, require a separate written agreement.
 
-3. CONDITIONS
+6. NO OPEN-SOURCE REPRESENTATION
+Because commercial use is restricted, this is a source-available research license and is not represented as an OSI-approved open-source license.
 
-Any permitted copy, modification, or redistribution must:
+7. WARRANTY AND LIABILITY
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE COPYRIGHT HOLDER AND CONTRIBUTORS SHALL NOT BE LIABLE FOR CLAIMS, DAMAGES OR OTHER LIABILITY ARISING FROM THE WORK OR ITS USE.
 
-(a) retain this copyright notice and this license;
-(b) clearly identify material modifications;
-(c) preserve attribution to Marcelo Roldão Matos and the Resolutive Computing project;
-(d) not imply endorsement by the copyright holder; and
-(e) not remove notices concerning authorship, citation, or commercial licensing.
-
-4. COMMERCIAL USE
-
-Commercial Use is not granted by this license. Commercial Use includes, without limitation:
-
-(a) selling or licensing the software, modified versions, or products substantially incorporating it;
-(b) offering the software or a derivative as a paid hosted service, SaaS, API, consulting deliverable, or managed service;
-(c) using the software as a material component of a commercial product or revenue-generating service; or
-(d) internal use by a for-profit entity where the software materially supports commercial operations, product development, or paid services.
-
-Commercial Use requires prior written authorization and a separate commercial license from the copyright holder.
-
-5. RESEARCH RESULTS AND PUBLICATIONS
-
-Academic and scientific publications may report results produced using this software. Publications should cite the project and, when available, the corresponding release, DOI, CITATION.cff entry, or scientific publication.
-
-6. CONTRIBUTIONS
-
-Unless a separate contributor agreement states otherwise, contributions submitted to this repository do not waive the copyright holder's rights in the project or grant commercial rights beyond those expressly stated in this license. Contributors retain rights in their original contributions to the extent provided by applicable law.
-
-7. NO TRADEMARK LICENSE
-
-This license does not grant permission to use project names, author names, logos, or trademarks to market or endorse products or services, except as reasonably necessary for factual attribution.
-
-8. DISCLAIMER OF WARRANTY
-
-THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE REMAINS WITH THE USER.
-
-9. LIMITATION OF LIABILITY
-
-TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE COPYRIGHT HOLDER AND CONTRIBUTORS SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE, DOCUMENTATION, OR THEIR USE.
-
-10. TERMINATION
-
-Rights granted under this license terminate automatically upon material breach. Rights may be restored only after the breach has been cured and the copyright holder has provided written confirmation where required.
-
-11. COMMERCIAL LICENSING
-
-For commercial licensing, contact the copyright holder through the official Resolutive Computing repository or another official contact channel published by the author.
-
-12. OPEN SOURCE STATUS
-
-Because this license restricts commercial use, it is a source-available research/non-commercial license and should not be described as an Open Source Initiative (OSI)-approved open-source license.
+8. TERMINATION
+Rights granted by this license terminate upon material breach. Rights not expressly granted are reserved by the copyright holder.
