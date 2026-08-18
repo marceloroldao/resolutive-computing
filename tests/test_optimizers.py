@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from resolutive.benchmarks.functions import ackley
-from resolutive.optimization.baselines import RandomSearch, SimulatedAnnealing
+from resolutive.optimization.baselines import DifferentialEvolution, RandomSearch, SimulatedAnnealing
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
 
@@ -17,6 +17,14 @@ def test_random_search_uses_exact_budget():
 
 def test_simulated_annealing_uses_exact_budget():
     result = SimulatedAnnealing().minimize(
+        ackley, dimension=4, bounds=(-32.768, 32.768), budget=123, seed=1
+    )
+    assert result.evaluations == 123
+    assert result.fun >= 0.0
+
+
+def test_differential_evolution_uses_exact_budget():
+    result = DifferentialEvolution(population_multiplier=4).minimize(
         ackley, dimension=4, bounds=(-32.768, 32.768), budget=123, seed=1
     )
     assert result.evaluations == 123
@@ -69,7 +77,14 @@ def test_v5_ablation_switches_preserve_budget_contract():
 
 
 def test_optimizers_reject_invalid_scalar_bounds():
-    for optimizer in (RandomSearch(), SimulatedAnnealing(), ResolutiveV2(), ResolutiveV5()):
+    optimizers = (
+        RandomSearch(),
+        SimulatedAnnealing(),
+        DifferentialEvolution(),
+        ResolutiveV2(),
+        ResolutiveV5(),
+    )
+    for optimizer in optimizers:
         with pytest.raises(ValueError):
             optimizer.minimize(ackley, dimension=4, bounds=(1.0, 1.0), budget=100, seed=0)
 
@@ -82,4 +97,11 @@ def test_resolutive_optimizers_reject_too_small_budget():
     with pytest.raises(ValueError):
         ResolutiveV5(population=20).minimize(
             ackley, dimension=4, bounds=(-1.0, 1.0), budget=20, seed=0
+        )
+
+
+def test_differential_evolution_rejects_budget_below_minimum_population():
+    with pytest.raises(ValueError):
+        DifferentialEvolution().minimize(
+            ackley, dimension=4, bounds=(-1.0, 1.0), budget=3, seed=0
         )
