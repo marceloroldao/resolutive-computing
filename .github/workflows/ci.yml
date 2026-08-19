@@ -39,7 +39,7 @@ jobs:
         run: python benchmarks/run_ablation.py --dimension 4 --budget 600 --seeds 1 --output /tmp/ablation.csv
       - name: Generalization benchmark smoke
         if: matrix.python-version == '3.12'
-        run: python benchmarks/run_generalization.py --dimension 4 --budget 600 --seeds 1 --output /tmp/generalization.csv
+        run: python benchmarks/run_generalization.py --dimension 4 --budget 1000 --seeds 1 --output /tmp/generalization.csv
       - name: PID control application smoke
         if: matrix.python-version == '3.12'
         run: python benchmarks/run_pid_control.py --budget 300 --seeds 1 --output /tmp/pid_control.csv
