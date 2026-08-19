@@ -15,6 +15,7 @@ import numpy as np
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
 from resolutive.benchmarks.transforms import GaussianNoisyObjective, shifted_rotated
 from resolutive.optimization.hybrid_multires import ResolutiveHybridMultiResolution
+from resolutive.optimization.hybrid_multires_adaptive import ResolutiveHybridMultiResolutionAdaptive
 from resolutive.optimization.hybrid_multires_robust import ResolutiveHybridMultiResolutionRobust
 from resolutive.optimization.hybrid_regime import ResolutiveHybridRegime
 from resolutive.optimization.v5 import ResolutiveV5
@@ -64,6 +65,7 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seeds: list[int],
         "RO-Hybrid-exp": ResolutiveHybridRegime,
         "RO-Hybrid-Multires-exp": ResolutiveHybridMultiResolution,
         "RO-Hybrid-Multires-Robust-exp": ResolutiveHybridMultiResolutionRobust,
+        "RO-Hybrid-Multires-Adaptive-exp": ResolutiveHybridMultiResolutionAdaptive,
     }
     rows: list[dict[str, object]] = []
 
