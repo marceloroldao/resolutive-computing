@@ -15,6 +15,7 @@ import numpy as np
 from scipy.optimize import differential_evolution
 
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
+from resolutive.optimization.hybrid_regime import ResolutiveHybridRegime
 from resolutive.optimization.spiral_relief import SpiralReliefOptimizer
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v2_spiral import ResolutiveV2Spiral
@@ -69,6 +70,7 @@ def run(dimension: int, budget: int, seeds: int, output: Path) -> None:
         "RO-V5": ResolutiveV5(),
         "RO-V5-Spiral-exp": ResolutiveV5Spiral(),
         "RO-V5-ConditionalSpiral-exp": ResolutiveV5ConditionalSpiral(),
+        "RO-Hybrid-exp": ResolutiveHybridRegime(),
         "RO-V6": ResolutiveV6(),
         "RO-V7": ResolutiveV7(),
         "SpiralRelief-exp": SpiralReliefOptimizer(),
