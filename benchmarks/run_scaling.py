@@ -10,6 +10,8 @@ import numpy as np
 
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
 from resolutive.optimization.baselines import DifferentialEvolution, RandomSearch, SimulatedAnnealing
+from resolutive.optimization.hybrid_multires import ResolutiveHybridMultiResolution
+from resolutive.optimization.hybrid_regime import ResolutiveHybridRegime
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
 
@@ -21,6 +23,8 @@ def run(dimensions: list[int], budget_per_dimension: int, seeds: int, output: Pa
         "DifferentialEvolution": DifferentialEvolution(),
         "RO-V2": ResolutiveV2(),
         "RO-V5": ResolutiveV5(),
+        "RO-Hybrid-exp": ResolutiveHybridRegime(),
+        "RO-Hybrid-Multires-exp": ResolutiveHybridMultiResolution(),
     }
     rows = []
     for dimension in dimensions:
