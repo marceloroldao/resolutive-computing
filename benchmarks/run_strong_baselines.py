@@ -17,8 +17,11 @@ from scipy.optimize import differential_evolution
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
 from resolutive.optimization.spiral_relief import SpiralReliefOptimizer
 from resolutive.optimization.v2 import ResolutiveV2
+from resolutive.optimization.v2_spiral import ResolutiveV2Spiral
+from resolutive.optimization.v4_historical import ResolutiveV4Historical
 from resolutive.optimization.v5 import ResolutiveV5
 from resolutive.optimization.v5_spiral import ResolutiveV5Spiral
+from resolutive.optimization.v5_spiral_conditional import ResolutiveV5ConditionalSpiral
 from resolutive.optimization.v6 import ResolutiveV6
 from resolutive.optimization.v7 import ResolutiveV7
 
@@ -61,8 +64,11 @@ def run(dimension: int, budget: int, seeds: int, output: Path) -> None:
     methods = {"CMA-ES(pycma)": _cma_es, "DE(scipy)": _scipy_de}
     ro = {
         "RO-V2": ResolutiveV2(),
+        "RO-V2-Spiral-exp": ResolutiveV2Spiral(),
+        "RO-V4-historical": ResolutiveV4Historical(),
         "RO-V5": ResolutiveV5(),
         "RO-V5-Spiral-exp": ResolutiveV5Spiral(),
+        "RO-V5-ConditionalSpiral-exp": ResolutiveV5ConditionalSpiral(),
         "RO-V6": ResolutiveV6(),
         "RO-V7": ResolutiveV7(),
         "SpiralRelief-exp": SpiralReliefOptimizer(),
