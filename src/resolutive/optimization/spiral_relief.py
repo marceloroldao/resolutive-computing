@@ -2,8 +2,8 @@
 
 The method samples a 2-D spiral embedded in the n-D search space, fits a local
 quadratic relief to objective values, and then slides the center downhill on
-that inferred relief. It is intentionally isolated from RO-V5/V6/V7 until
-benchmarks establish whether the mechanism adds value.
+that inferred relief. It can operate globally from a random point or locally
+from a supplied incumbent solution.
 """
 from __future__ import annotations
 
@@ -73,25 +73,28 @@ class SpiralReliefOptimizer:
         self.spiral_points = spiral_points
         self.turns = float(turns)
 
-    def minimize(self, objective: Objective, *, dimension: int,
-                 bounds: tuple[float, float], budget: int = 6000,
-                 seed: int = 0) -> OptimizationResult:
+    def _run_from(self, objective: Objective, *, start: np.ndarray,
+                  bounds: tuple[float, float], budget: int, seed: int,
+                  radius_fraction: float, version: str) -> OptimizationResult:
+        lo, hi = validate_bounds(bounds)
+        dimension = int(len(start))
         if dimension < 2:
             raise ValueError("dimension must be >= 2")
-        lo, hi = validate_bounds(bounds)
         if budget <= self.spiral_points + 1:
             raise ValueError("budget too small for one spiral cycle")
+        if not (0.0 < radius_fraction <= 0.5):
+            raise ValueError("radius_fraction must be in (0, 0.5]")
 
         rng = np.random.default_rng(seed)
         span = hi - lo
-        center = rng.uniform(lo, hi, dimension)
+        center = np.clip(np.asarray(start, dtype=float), lo, hi).copy()
         center_value = float(objective(center))
         best = center.copy()
         best_value = center_value
         used = 1
 
-        radius = 0.24 * span
-        min_radius = 1e-6 * span
+        radius = radius_fraction * span
+        min_radius = 1e-7 * span
         stall = 0
         golden_angle = np.pi * (3.0 - np.sqrt(5.0))
 
@@ -116,29 +119,47 @@ class SpiralReliefOptimizer:
 
             gradient, hessian = _fit_relief(coords, values)
             slide2 = _slide_vector(gradient, hessian, radius)
-            candidate = center + slide2[0] * u + slide2[1] * v
-            candidate = np.clip(candidate, lo, hi)
+            candidate = np.clip(center + slide2[0] * u + slide2[1] * v, lo, hi)
             candidate_value = float(objective(candidate))
             used += 1
             if candidate_value < best_value:
                 best = candidate.copy()
                 best_value = candidate_value
 
-            # The center follows the lowest confirmed point, not merely the surrogate.
-            next_value = min(center_value, mapped_value, candidate_value)
-            if next_value < center_value:
+            if min(mapped_value, candidate_value) < center_value:
                 if candidate_value <= mapped_value:
-                    center = candidate
-                    center_value = candidate_value
+                    center, center_value = candidate, candidate_value
                 else:
-                    center = mapped_point
-                    center_value = mapped_value
-                radius = min(radius * 1.04, 0.35 * span)
+                    center, center_value = mapped_point, mapped_value
+                # Local refinement should not re-expand aggressively.
+                radius *= 0.92
                 stall = 0
             else:
                 stall += 1
+                radius *= 0.72 if stall >= 2 else 0.90
                 if stall >= 2:
-                    radius *= 0.62
                     stall = 0
 
-        return OptimizationResult(best, best_value, used, seed, "SpiralRelief-exp")
+        return OptimizationResult(best, best_value, used, seed, version)
+
+    def refine(self, objective: Objective, *, start: np.ndarray,
+               bounds: tuple[float, float], budget: int = 600,
+               seed: int = 0, radius_fraction: float = 0.04) -> OptimizationResult:
+        """Refine an incumbent point using a small local spiral relief."""
+        return self._run_from(
+            objective, start=start, bounds=bounds, budget=budget, seed=seed,
+            radius_fraction=radius_fraction, version="SpiralRelief-local",
+        )
+
+    def minimize(self, objective: Objective, *, dimension: int,
+                 bounds: tuple[float, float], budget: int = 6000,
+                 seed: int = 0) -> OptimizationResult:
+        if dimension < 2:
+            raise ValueError("dimension must be >= 2")
+        lo, hi = validate_bounds(bounds)
+        rng = np.random.default_rng(seed)
+        start = rng.uniform(lo, hi, dimension)
+        return self._run_from(
+            objective, start=start, bounds=bounds, budget=budget, seed=seed + 1,
+            radius_fraction=0.24, version="SpiralRelief-exp",
+        )
