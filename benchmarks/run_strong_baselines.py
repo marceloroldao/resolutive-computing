@@ -18,6 +18,7 @@ from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
 from resolutive.optimization.spiral_relief import SpiralReliefOptimizer
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
+from resolutive.optimization.v5_spiral import ResolutiveV5Spiral
 from resolutive.optimization.v6 import ResolutiveV6
 from resolutive.optimization.v7 import ResolutiveV7
 
@@ -61,6 +62,7 @@ def run(dimension: int, budget: int, seeds: int, output: Path) -> None:
     ro = {
         "RO-V2": ResolutiveV2(),
         "RO-V5": ResolutiveV5(),
+        "RO-V5-Spiral-exp": ResolutiveV5Spiral(),
         "RO-V6": ResolutiveV6(),
         "RO-V7": ResolutiveV7(),
         "SpiralRelief-exp": SpiralReliefOptimizer(),
