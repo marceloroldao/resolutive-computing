@@ -15,6 +15,7 @@ import numpy as np
 from scipy.optimize import differential_evolution
 
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
+from resolutive.optimization.spiral_relief import SpiralReliefOptimizer
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
 from resolutive.optimization.v6 import ResolutiveV6
@@ -62,6 +63,7 @@ def run(dimension: int, budget: int, seeds: int, output: Path) -> None:
         "RO-V5": ResolutiveV5(),
         "RO-V6": ResolutiveV6(),
         "RO-V7": ResolutiveV7(),
+        "SpiralRelief-exp": SpiralReliefOptimizer(),
     }
     rows = []
     for benchmark_name, (objective, bounds) in DEFAULT_BENCHMARKS.items():
