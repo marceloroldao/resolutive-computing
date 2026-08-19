@@ -1,4 +1,4 @@
-"""Multi-instance geometry diagnostic for RO-V5/V6/V7 and CMA-ES.
+"""Multi-instance geometry diagnostic for resolutive optimizers and CMA-ES.
 
 Purpose: test whether apparent gains on shifted/rotated problems persist across
 multiple deterministic problem instances instead of depending on one rotation.
@@ -14,6 +14,8 @@ import numpy as np
 
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
 from resolutive.benchmarks.transforms import GaussianNoisyObjective, shifted_rotated
+from resolutive.optimization.hybrid_multires import ResolutiveHybridMultiResolution
+from resolutive.optimization.hybrid_regime import ResolutiveHybridRegime
 from resolutive.optimization.v5 import ResolutiveV5
 from resolutive.optimization.v6 import ResolutiveV6
 from resolutive.optimization.v7 import ResolutiveV7
@@ -58,6 +60,8 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seeds: list[int],
         "RO-V5": ResolutiveV5,
         "RO-V6": ResolutiveV6,
         "RO-V7": ResolutiveV7,
+        "RO-Hybrid-exp": ResolutiveHybridRegime,
+        "RO-Hybrid-Multires-exp": ResolutiveHybridMultiResolution,
     }
     rows: list[dict[str, object]] = []
 
