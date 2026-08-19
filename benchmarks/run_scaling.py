@@ -6,6 +6,7 @@ import argparse
 import csv
 from pathlib import Path
 
+import cma
 import numpy as np
 
 from resolutive.benchmarks.functions import DEFAULT_BENCHMARKS
@@ -16,8 +17,35 @@ from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
 
 
+def _cma_es(objective, dimension, bounds, budget, seed):
+    lo, hi = bounds
+    x0 = np.full(dimension, (lo + hi) / 2.0)
+    sigma0 = (hi - lo) / 4.0
+    es = cma.CMAEvolutionStrategy(x0, sigma0, {
+        "bounds": [lo, hi], "seed": seed + 1, "verbose": -9,
+        "verb_disp": 0, "maxfevals": budget,
+    })
+    used = 0
+    best_x = x0.copy()
+    best = float("inf")
+    while not es.stop() and used < budget:
+        xs = es.ask()
+        xs = xs[: max(0, budget - used)]
+        if not xs:
+            break
+        ys = [float(objective(np.asarray(x))) for x in xs]
+        used += len(ys)
+        j = int(np.argmin(ys))
+        if ys[j] < best:
+            best = float(ys[j])
+            best_x = np.asarray(xs[j], dtype=float).copy()
+        es.tell(xs, ys)
+    return best_x, best, used
+
+
 def run(dimensions: list[int], budget_per_dimension: int, seeds: int, output: Path) -> None:
     optimizers = {
+        "CMA-ES(pycma)": None,
         "RandomSearch": RandomSearch(),
         "SimulatedAnnealing": SimulatedAnnealing(),
         "DifferentialEvolution": DifferentialEvolution(),
@@ -34,15 +62,19 @@ def run(dimensions: list[int], budget_per_dimension: int, seeds: int, output: Pa
                 values = []
                 evaluations = []
                 for seed in range(seeds):
-                    result = optimizer.minimize(
-                        objective,
-                        dimension=dimension,
-                        bounds=bounds,
-                        budget=budget,
-                        seed=seed,
-                    )
-                    values.append(result.fun)
-                    evaluations.append(result.evaluations)
+                    if optimizer_name.startswith("CMA-ES"):
+                        _x, value, used = _cma_es(objective, dimension, bounds, budget, seed)
+                    else:
+                        result = optimizer.minimize(
+                            objective,
+                            dimension=dimension,
+                            bounds=bounds,
+                            budget=budget,
+                            seed=seed,
+                        )
+                        value, used = result.fun, result.evaluations
+                    values.append(float(value))
+                    evaluations.append(int(used))
                 rows.append(
                     {
                         "benchmark": benchmark_name,
