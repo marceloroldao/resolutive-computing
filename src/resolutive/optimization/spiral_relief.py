@@ -19,7 +19,6 @@ def _orthonormal_plane(rng: np.random.Generator, dimension: int) -> tuple[np.nda
     v -= np.dot(v, u) * u
     norm = np.linalg.norm(v)
     if norm < 1e-12:
-        # Deterministic fallback basis direction least aligned with u.
         axis = int(np.argmin(np.abs(u)))
         v = np.zeros(dimension)
         v[axis] = 1.0
@@ -30,10 +29,7 @@ def _orthonormal_plane(rng: np.random.Generator, dimension: int) -> tuple[np.nda
 
 
 def _fit_relief(coords: np.ndarray, values: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """Fit z=c0+c1*a+c2*b+c3*a^2+c4*a*b+c5*b^2.
-
-    Returns gradient and Hessian at the spiral center.
-    """
+    """Fit z=c0+c1*a+c2*b+c3*a^2+c4*a*b+c5*b^2."""
     a = coords[:, 0]
     b = coords[:, 1]
     design = np.column_stack((np.ones(len(coords)), a, b, a * a, a * b, b * b))
@@ -49,7 +45,6 @@ def _slide_vector(gradient: np.ndarray, hessian: np.ndarray, radius: float) -> n
     if not np.isfinite(gnorm) or gnorm < 1e-15:
         return np.zeros(2)
 
-    # Use a damped Newton displacement only when local curvature is positive.
     eigvals = np.linalg.eigvalsh(hessian)
     if np.all(eigvals > 1e-10):
         damping = max(1e-8, 0.05 * float(np.max(eigvals)))
@@ -90,8 +85,9 @@ class SpiralReliefOptimizer:
         rng = np.random.default_rng(seed)
         span = hi - lo
         center = rng.uniform(lo, hi, dimension)
+        center_value = float(objective(center))
         best = center.copy()
-        best_value = float(objective(center))
+        best_value = center_value
         used = 1
 
         radius = 0.24 * span
@@ -102,7 +98,6 @@ class SpiralReliefOptimizer:
         while used + self.spiral_points + 1 <= budget and radius >= min_radius:
             u, v = _orthonormal_plane(rng, dimension)
             idx = np.arange(1, self.spiral_points + 1, dtype=float)
-            # Fermat-style spiral: roughly uniform areal sampling.
             radial = radius * np.sqrt(idx / self.spiral_points)
             theta = golden_angle * idx * self.turns
             coords = np.column_stack((radial * np.cos(theta), radial * np.sin(theta)))
@@ -113,9 +108,11 @@ class SpiralReliefOptimizer:
             used += self.spiral_points
 
             local_i = int(np.argmin(values))
-            if float(values[local_i]) < best_value:
-                best = points[local_i].copy()
-                best_value = float(values[local_i])
+            mapped_value = float(values[local_i])
+            mapped_point = points[local_i].copy()
+            if mapped_value < best_value:
+                best = mapped_point.copy()
+                best_value = mapped_value
 
             gradient, hessian = _fit_relief(coords, values)
             slide2 = _slide_vector(gradient, hessian, radius)
@@ -123,30 +120,25 @@ class SpiralReliefOptimizer:
             candidate = np.clip(candidate, lo, hi)
             candidate_value = float(objective(candidate))
             used += 1
-
-            # Accept either the inferred slide or the best mapped point.
-            mapped_value = float(values[local_i])
-            if candidate_value <= mapped_value and candidate_value < best_value:
-                center = candidate
+            if candidate_value < best_value:
                 best = candidate.copy()
                 best_value = candidate_value
-                radius *= 1.04
-                stall = 0
-            elif mapped_value < float(objective(center)) if False else False:
-                # Kept unreachable deliberately: center value is not re-evaluated.
-                pass
-            elif mapped_value < best_value + 1e-15:
-                center = points[local_i].copy()
+
+            # The center follows the lowest confirmed point, not merely the surrogate.
+            next_value = min(center_value, mapped_value, candidate_value)
+            if next_value < center_value:
+                if candidate_value <= mapped_value:
+                    center = candidate
+                    center_value = candidate_value
+                else:
+                    center = mapped_point
+                    center_value = mapped_value
+                radius = min(radius * 1.04, 0.35 * span)
                 stall = 0
             else:
                 stall += 1
-
-            # Radius behaves like map resolution: refine after stalls, modestly
-            # expand after useful discoveries to cross neighboring basins.
-            if stall >= 2:
-                radius *= 0.62
-                stall = 0
-            else:
-                radius = min(radius, 0.35 * span)
+                if stall >= 2:
+                    radius *= 0.62
+                    stall = 0
 
         return OptimizationResult(best, best_value, used, seed, "SpiralRelief-exp")
