@@ -67,3 +67,9 @@ jobs:
           python benchmarks/run_generalization.py --dimension 10 --budget 3000 --seeds 8 --instance-seed 2026 --noise-fraction 0.01 --output /tmp/generalization_10d.csv
           echo '=== GENERALIZATION 10D ==='
           cat /tmp/generalization_10d.csv
+      - name: Multi-instance geometry campaign
+        if: matrix.python-version == '3.12'
+        run: |
+          python benchmarks/run_multi_instance_geometry.py --dimension 10 --budget 3000 --seeds 4 --instance-seeds 2026 2027 2028 2029 --noise-fraction 0.01 --output /tmp/multi_instance_geometry.csv
+          echo '=== MULTI-INSTANCE GEOMETRY ==='
+          cat /tmp/multi_instance_geometry.csv
