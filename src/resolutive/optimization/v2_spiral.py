@@ -1,15 +1,8 @@
-"""Experimental RO-V2 + SpiralRelief hybrid.
-
-RO-V2 performs the global search with its coordinate collapse disabled by
-budget partitioning. A local SpiralRelief phase then refines around the best
-RO-V2 point while respecting the same total objective-evaluation budget.
-"""
+"""Experimental RO-V2 + SpiralRelief hybrid."""
 from __future__ import annotations
 
-import numpy as np
-
 from .common import Objective, OptimizationResult, validate_bounds
-from .spiral_relief import refine_with_spiral
+from .spiral_relief import SpiralReliefOptimizer
 from .v2 import ResolutiveV2
 
 
@@ -26,14 +19,11 @@ class ResolutiveV2Spiral:
         if dimension < 2:
             raise ValueError("dimension must be >= 2")
         lo, hi = validate_bounds(bounds)
-        reserve = max(80, int(round(budget * self.spiral_fraction)))
+        reserve = max(120, int(round(budget * self.spiral_fraction)))
         global_budget = budget - reserve
         if global_budget <= self.population + 50:
             raise ValueError("budget too small for hybrid optimization")
 
-        # Run the existing V2 engine under a reduced budget. Its own collapse is
-        # retained; this experiment asks whether a second geometry-aware local
-        # phase adds value despite that cost.
         base = ResolutiveV2(population=self.population).minimize(
             objective, dimension=dimension, bounds=(lo, hi),
             budget=global_budget, seed=seed,
@@ -42,12 +32,15 @@ class ResolutiveV2Spiral:
         if remaining < 20:
             return OptimizationResult(base.x, base.fun, base.evaluations, seed, "RO-V2-Spiral-exp")
 
-        refined = refine_with_spiral(
-            objective, start=base.x, start_value=base.fun,
-            bounds=(lo, hi), budget=remaining, seed=seed + 200003,
-            initial_radius_fraction=0.035,
+        refined = SpiralReliefOptimizer(spiral_points=18, turns=2.5).refine(
+            objective, start=base.x, bounds=(lo, hi), budget=remaining,
+            seed=seed + 200003, radius_fraction=0.035,
         )
+        if refined.fun < base.fun:
+            x, fun = refined.x, refined.fun
+        else:
+            x, fun = base.x, base.fun
         return OptimizationResult(
-            refined.x, refined.fun, base.evaluations + refined.evaluations,
+            x, float(fun), base.evaluations + refined.evaluations,
             seed, "RO-V2-Spiral-exp",
         )
