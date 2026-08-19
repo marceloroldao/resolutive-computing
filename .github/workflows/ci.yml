@@ -33,7 +33,7 @@ jobs:
         run: python benchmarks/run_classical.py --dimension 4 --budget 600 --seeds 2 --output /tmp/classical.csv
       - name: Scaling benchmark smoke
         if: matrix.python-version == '3.12'
-        run: python benchmarks/run_scaling.py --dimensions 4 6 --budget-per-dimension 100 --seeds 1 --output /tmp/scaling.csv
+        run: python benchmarks/run_scaling.py --dimensions 4 6 --budget-per-dimension 200 --seeds 1 --output /tmp/scaling.csv
       - name: Ablation benchmark smoke
         if: matrix.python-version == '3.12'
         run: python benchmarks/run_ablation.py --dimension 4 --budget 600 --seeds 1 --output /tmp/ablation.csv
@@ -61,6 +61,12 @@ jobs:
           python benchmarks/run_strong_baselines.py --dimension 10 --budget 3000 --seeds 8 --output /tmp/strong_baselines_10d.csv
           echo '=== STRONG BASELINES 10D ==='
           cat /tmp/strong_baselines_10d.csv
+      - name: Dimensional scaling campaign
+        if: matrix.python-version == '3.12'
+        run: |
+          python benchmarks/run_scaling.py --dimensions 10 20 30 50 --budget-per-dimension 600 --seeds 8 --output /tmp/scaling_10_50d.csv
+          echo '=== SCALING 10D-50D ==='
+          cat /tmp/scaling_10_50d.csv
       - name: Rotated/noisy diagnostic campaign
         if: matrix.python-version == '3.12'
         run: |
