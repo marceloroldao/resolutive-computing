@@ -55,6 +55,12 @@ jobs:
           python benchmarks/run_specialist_session_compare.py --dimension 10 --budget 3000 --seeds 3 --output /tmp/specialist_session_compare.csv
           echo '=== MONOLITHIC VS ASK-TELL V2/V5 ==='
           cat /tmp/specialist_session_compare.csv
+      - name: Incremental hybrid comparison
+        if: matrix.python-version == '3.12'
+        run: |
+          python benchmarks/run_hybrid_session_compare.py --dimension 10 --budget 3000 --seeds 3 --output /tmp/hybrid_session_compare.csv
+          echo '=== MONOLITHIC VS ASK-TELL HYBRID ==='
+          cat /tmp/hybrid_session_compare.csv
       - name: Incremental Multires comparison
         if: matrix.python-version == '3.12'
         run: |
