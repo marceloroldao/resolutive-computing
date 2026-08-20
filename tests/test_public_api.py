@@ -1,7 +1,9 @@
 import numpy as np
 import pytest
 
-from resolutive import OptimizationResult, optimize
+from resolutive import OptimizationResult, create_session, optimize
+from resolutive.multires_session import MultiResolutionSession
+from resolutive.session import OptimizationSession
 
 
 def sphere(x: np.ndarray) -> float:
@@ -41,3 +43,23 @@ def test_public_api_is_deterministic_for_specialist() -> None:
 def test_public_api_rejects_unknown_mode() -> None:
     with pytest.raises(ValueError, match="unknown optimization mode"):
         optimize(sphere, dimension=4, bounds=(-5.0, 5.0), budget=1200, mode="invalid")  # type: ignore[arg-type]
+
+
+def test_public_session_factory_defaults_to_multires() -> None:
+    session = create_session(dimension=3, bounds=(-2.0, 2.0), budget=200)
+    assert isinstance(session, MultiResolutionSession)
+
+
+def test_public_session_factory_preserves_prototype() -> None:
+    session = create_session(
+        dimension=3,
+        bounds=(-2.0, 2.0),
+        budget=50,
+        mode="prototype",
+    )
+    assert isinstance(session, OptimizationSession)
+
+
+def test_public_session_factory_rejects_unknown_mode() -> None:
+    with pytest.raises(ValueError, match="unknown session mode"):
+        create_session(dimension=3, bounds=(-2.0, 2.0), budget=200, mode="invalid")  # type: ignore[arg-type]
