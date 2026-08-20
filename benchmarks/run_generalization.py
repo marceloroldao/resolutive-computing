@@ -15,6 +15,7 @@ from resolutive.optimization.hybrid_multires import ResolutiveHybridMultiResolut
 from resolutive.optimization.hybrid_multires_adaptive import ResolutiveHybridMultiResolutionAdaptive
 from resolutive.optimization.hybrid_multires_robust import ResolutiveHybridMultiResolutionRobust
 from resolutive.optimization.hybrid_regime import ResolutiveHybridRegime
+from resolutive.optimization.regime_router import ResolutiveRegimeRouter
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
 from resolutive.optimization.v6 import ResolutiveV6
@@ -32,6 +33,7 @@ OPTIMIZERS = {
     "RO-Hybrid-Multires-exp": ResolutiveHybridMultiResolution,
     "RO-Hybrid-Multires-Robust-exp": ResolutiveHybridMultiResolutionRobust,
     "RO-Hybrid-Multires-Adaptive-exp": ResolutiveHybridMultiResolutionAdaptive,
+    "RO-RegimeRouter-exp": ResolutiveRegimeRouter,
 }
 
 
@@ -57,11 +59,11 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seed: int,
         cases = [
             ("shifted_rotated", budget, False),
             ("shifted_rotated_noisy", budget, True),
-            ("short_budget", max(1000, budget // 10), False),
+            ("short_budget", max(1400, budget // 10), False),
         ]
         for case_name, case_budget, noisy in cases:
             for optimizer_name, optimizer_type in OPTIMIZERS.items():
-                values, evaluations = [], []
+                values, evaluations, routes = [], [], []
                 for seed in range(seeds):
                     objective = transformed
                     if noisy:
@@ -69,12 +71,16 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seed: int,
                             transformed, sigma=noise_sigma,
                             seed=100_000 * instance_seed + seed,
                         )
-                    result = optimizer_type().minimize(
+                    optimizer = optimizer_type()
+                    result = optimizer.minimize(
                         objective, dimension=dimension, bounds=bounds,
                         budget=case_budget, seed=seed,
                     )
                     values.append(float(transformed(result.x)))
                     evaluations.append(int(result.evaluations))
+                    diagnostics = getattr(optimizer, "last_diagnostics", None)
+                    if diagnostics is not None:
+                        routes.append(diagnostics.selected)
                 rows.append({
                     "benchmark": benchmark_name, "case": case_name,
                     "optimizer": optimizer_name, "dimension": dimension,
@@ -82,6 +88,7 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seed: int,
                     "instance_seed": instance_seed,
                     "shift_norm": float(np.linalg.norm(shift)),
                     "noise_sigma": noise_sigma if noisy else 0.0,
+                    "routes": ";".join(routes),
                     "median": float(np.median(values)),
                     "mean": float(np.mean(values)),
                     "std": float(np.std(values, ddof=1)) if seeds > 1 else 0.0,
