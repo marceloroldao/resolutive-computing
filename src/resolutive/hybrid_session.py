@@ -71,6 +71,15 @@ class HybridRegimeSession:
         self.pending_kind = kind
         return AskBatch(self.pending.copy(), self.evaluations)
 
+    def _advance_after_core(self) -> AskBatch:
+        r = self.core.result()
+        if r.fun < self.best_fun:
+            self.best_fun, self.best_x = float(r.fun), r.x.copy()
+        self.phase = "gate" if self.remaining >= 30 else "done"
+        if self.done:
+            raise RuntimeError("optimization session is complete")
+        return self.ask()
+
     def ask(self) -> AskBatch:
         if self.pending is not None:
             raise RuntimeError("tell() must be called before the next ask()")
@@ -79,7 +88,18 @@ class HybridRegimeSession:
         if self.phase == "recon":
             return self._emit(self.recon_points, "recon")
         if self.phase == "core":
-            return self.core.ask()
+            if self.core.done:
+                return self._advance_after_core()
+            try:
+                return self.core.ask()
+            except RuntimeError as exc:
+                # Specialist sessions may discover at ask-time that the
+                # remaining private core budget cannot fit another full
+                # generation. Treat that as normal phase completion rather
+                # than leaking the specialist's terminal exception outward.
+                if self.core.done and str(exc) == "optimization session is complete":
+                    return self._advance_after_core()
+                raise
         if self.phase == "gate":
             rng = np.random.default_rng(self.seed + 700019)
             u, v = _orthonormal_plane(rng, self.dimension)
@@ -93,6 +113,12 @@ class HybridRegimeSession:
                           self.lo, self.hi)
             return self._emit(pts, "gate")
         if self.phase == "local":
+            if self.local.done:
+                r = self.local.result()
+                if r.fun < self.best_fun:
+                    self.best_fun, self.best_x = float(r.fun), r.x.copy()
+                self.phase = "done"
+                raise RuntimeError("optimization session is complete")
             return self.local.ask()
         if self.phase == "collapse":
             step = getattr(self, "collapse_step", 0.025 * self.span)
