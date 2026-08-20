@@ -1,13 +1,12 @@
 """Stateful multiresolution ask/tell optimizer.
 
-This is the first incremental Resolutive engine intended for external evaluation.
-It preserves optimization state across ask/tell boundaries and mirrors the
-coarse-to-fine local geometry used by the monolithic Hybrid-Multires engine.
+All externally evaluated points are emitted only by ``ask()``.  ``tell()``
+updates state and may prepare the next proposal internally, but never creates a
+hidden outstanding evaluation.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
-
 import numpy as np
 
 from .optimization.common import OptimizationResult, validate_bounds
@@ -26,19 +25,11 @@ class MultiResolutionState:
 class MultiResolutionSession:
     """Incremental coarse-to-fine optimizer for external objective evaluation."""
 
-    def __init__(
-        self,
-        *,
-        dimension: int,
-        bounds: tuple[float, float],
-        budget: int,
-        seed: int = 0,
-        batch_size: int = 16,
-        exploration_fraction: float = 0.55,
-        radius_schedule: tuple[float, ...] = (0.04, 0.01, 0.0025, 0.000625),
-        points_per_level: int = 18,
-        turns: float = 2.5,
-    ) -> None:
+    def __init__(self, *, dimension: int, bounds: tuple[float, float], budget: int,
+                 seed: int = 0, batch_size: int = 16,
+                 exploration_fraction: float = 0.55,
+                 radius_schedule: tuple[float, ...] = (0.04, 0.01, 0.0025, 0.000625),
+                 points_per_level: int = 18, turns: float = 2.5) -> None:
         if dimension < 2:
             raise ValueError("dimension must be >= 2")
         if budget < 200:
@@ -73,9 +64,9 @@ class MultiResolutionSession:
         self._pending_kind: str | None = None
         self._pending_coords: np.ndarray | None = None
         self._plane: tuple[np.ndarray, np.ndarray] | None = None
+        self._prepared_slide: np.ndarray | None = None
         self._best_x: np.ndarray | None = None
         self._best_fun = float("inf")
-        self._last_spiral_values: np.ndarray | None = None
 
     @property
     def evaluations(self) -> int:
@@ -93,7 +84,8 @@ class MultiResolutionSession:
     def state(self) -> MultiResolutionState:
         return MultiResolutionState(self._phase, self._level, self._generation, self._evaluations)
 
-    def _set_pending(self, points: np.ndarray, kind: str, coords: np.ndarray | None = None) -> AskBatch:
+    def _set_pending(self, points: np.ndarray, kind: str,
+                     coords: np.ndarray | None = None) -> AskBatch:
         self._pending = np.asarray(points, dtype=float)
         self._pending_kind = kind
         self._pending_coords = None if coords is None else np.asarray(coords, dtype=float)
@@ -106,25 +98,31 @@ class MultiResolutionSession:
             raise RuntimeError("optimization session is complete")
 
         if self._phase == "explore":
-            remaining_explore = max(0, self.exploration_budget - self._evaluations)
-            if remaining_explore == 0:
+            left = max(0, self.exploration_budget - self._evaluations)
+            if left == 0:
                 self._phase = "spiral"
                 return self.ask()
-            n = min(self.batch_size, self.remaining, remaining_explore)
-            points = self._rng.uniform(self.lo, self.hi, size=(n, self.dimension))
-            return self._set_pending(points, "explore")
+            n = min(self.batch_size, self.remaining, left)
+            return self._set_pending(
+                self._rng.uniform(self.lo, self.hi, size=(n, self.dimension)), "explore")
+
+        if self._phase == "slide":
+            if self._prepared_slide is None:
+                self._level += 1
+                self._phase = "spiral"
+                return self.ask()
+            point = self._prepared_slide.reshape(1, -1)
+            self._prepared_slide = None
+            return self._set_pending(point, "slide")
 
         if self._phase == "spiral":
             if self._best_x is None:
                 self._phase = "done"
-                return self.ask()
+                raise RuntimeError("optimization session is complete")
             if self._level >= len(self.radius_schedule) or self.remaining < 2:
                 self._phase = "polish"
                 return self.ask()
-            n = min(self.points_per_level, self.remaining - 1 if self.remaining > 1 else 1)
-            if n < 1:
-                self._phase = "done"
-                return self.ask()
+            n = min(self.points_per_level, max(1, self.remaining - 1))
             rng = np.random.default_rng(self.seed + 810_001 + self._level * 9_973)
             u, v = _orthonormal_plane(rng, self.dimension)
             self._plane = (u, v)
@@ -134,13 +132,9 @@ class MultiResolutionSession:
             radial = radius * span * np.sqrt(idx / n)
             theta = np.pi * (3.0 - np.sqrt(5.0)) * idx * self.turns
             coords = np.column_stack((radial * np.cos(theta), radial * np.sin(theta)))
-            points = np.clip(self._best_x + coords[:, :1] * u + coords[:, 1:] * v, self.lo, self.hi)
+            points = np.clip(self._best_x + coords[:, :1] * u + coords[:, 1:] * v,
+                             self.lo, self.hi)
             return self._set_pending(points, "spiral", coords)
-
-        if self._phase == "slide":
-            if self._best_x is None or self._pending_coords is not None:
-                raise RuntimeError("invalid slide state")
-            raise RuntimeError("slide candidate should have been prepared internally")
 
         if self._phase == "polish":
             if self._best_x is None or self.remaining <= 0:
@@ -148,7 +142,7 @@ class MultiResolutionSession:
                 raise RuntimeError("optimization session is complete")
             span = self.hi - self.lo
             step = self.radius_schedule[-1] * span * max(0.25, 0.5 ** max(0, self._generation - 1))
-            points = []
+            points: list[np.ndarray] = []
             for axis in range(self.dimension):
                 for sign in (-1.0, 1.0):
                     if len(points) >= self.remaining:
@@ -174,9 +168,7 @@ class MultiResolutionSession:
         if not np.all(np.isfinite(vals)):
             raise ValueError("values must be finite")
 
-        kind = self._pending_kind
-        points = self._pending
-        coords = self._pending_coords
+        kind, points, coords = self._pending_kind, self._pending, self._pending_coords
         j = int(np.argmin(vals))
         if float(vals[j]) < self._best_fun:
             self._best_fun = float(vals[j])
@@ -188,14 +180,18 @@ class MultiResolutionSession:
         self._pending_coords = None
         self._generation += 1
 
+        if self.remaining <= 0:
+            self._phase = "done"
+            return
+
         if kind == "explore":
-            if self._evaluations >= self.exploration_budget or self.remaining <= 0:
-                self._phase = "spiral" if self.remaining > 0 else "done"
+            if self._evaluations >= self.exploration_budget:
+                self._phase = "spiral"
             return
 
         if kind == "spiral":
-            self._last_spiral_values = vals.copy()
-            if coords is not None and self._plane is not None and self.remaining > 0 and self._best_x is not None:
+            self._prepared_slide = None
+            if coords is not None and self._plane is not None and self._best_x is not None:
                 grad, hessian = _fit_relief(coords, vals)
                 step2 = None
                 eig = np.linalg.eigvalsh(hessian)
@@ -207,48 +203,31 @@ class MultiResolutionSession:
                 if step2 is None or not np.all(np.isfinite(step2)):
                     norm = float(np.linalg.norm(grad))
                     if norm > 1e-15:
-                        radius = self.radius_schedule[self._level] * (self.hi - self.lo)
-                        step2 = -radius * grad / norm
+                        step2 = -(self.radius_schedule[self._level] * (self.hi - self.lo)) * grad / norm
                 if step2 is not None and np.all(np.isfinite(step2)):
                     radius = self.radius_schedule[self._level] * (self.hi - self.lo)
                     norm = float(np.linalg.norm(step2))
                     if norm > radius:
                         step2 = step2 * radius / (norm + 1e-15)
                     u, v = self._plane
-                    cand = np.clip(self._best_x + step2[0] * u + step2[1] * v, self.lo, self.hi)
-                    self._pending = cand.reshape(1, -1)
-                    self._pending_kind = "slide-candidate"
-                    self._pending_coords = None
-                    self._phase = "slide-candidate"
-                    return
+                    self._prepared_slide = np.clip(
+                        self._best_x + step2[0] * u + step2[1] * v, self.lo, self.hi)
+            self._phase = "slide"
+            return
+
+        if kind == "slide":
             self._level += 1
             self._phase = "spiral" if self._level < len(self.radius_schedule) else "polish"
             return
 
-        if kind == "slide-candidate":
-            self._level += 1
-            self._phase = "spiral" if self._level < len(self.radius_schedule) and self.remaining > 0 else "polish"
-            return
-
         if kind == "polish":
-            if self.remaining <= 0:
-                self._phase = "done"
-            return
-
-    def pending_batch(self) -> AskBatch | None:
-        """Return an internally prepared batch, used for slide candidates."""
-        if self._pending is None:
-            return None
-        return AskBatch(self._pending.copy(), self._generation)
+            self._phase = "polish"
 
     def result(self) -> OptimizationResult:
         if self._best_x is None:
             raise RuntimeError("no observations have been supplied")
         return OptimizationResult(
-            self._best_x.copy(),
-            self._best_fun,
-            self._evaluations,
-            self.seed,
+            self._best_x.copy(), self._best_fun, self._evaluations, self.seed,
             "RO-Multires-AskTell-exp",
             status="success" if self.done else "running",
             diagnostics={
