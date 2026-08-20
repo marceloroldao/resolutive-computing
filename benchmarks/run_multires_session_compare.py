@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from resolutive import create_session
-from resolutive.benchmarks.classical import ackley, rastrigin, rosenbrock
+from resolutive.benchmarks.functions import ackley, rastrigin, rosenbrock
 from resolutive.optimization.hybrid_multires import ResolutiveHybridMultiResolution
 
 
