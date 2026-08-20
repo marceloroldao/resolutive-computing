@@ -36,6 +36,21 @@ def _softmax(scores: dict[str, float]) -> dict[str, float]:
     return {k: float(p) for k, p in zip(keys, probs)}
 
 
+def _repeat_dispersion(values: list[float]) -> float:
+    """Robust repeated-measure dispersion, including symmetric alternation.
+
+    Median absolute deviation can be exactly zero for samples such as
+    [+a, -a, +a].  Pairwise absolute differences preserve that evidence of
+    stochastic inconsistency while remaining zero for deterministic repeats.
+    """
+    arr = np.asarray(values, dtype=float)
+    if arr.size < 2:
+        return 0.0
+    diffs = np.abs(arr[:, None] - arr[None, :])
+    tri = diffs[np.triu_indices(arr.size, k=1)]
+    return float(np.median(tri)) if tri.size else 0.0
+
+
 class ResolutiveRegimeRouter:
     """Route to V5, V6, Multires, or Robust from explicit diagnostics."""
 
@@ -55,12 +70,13 @@ class ResolutiveRegimeRouter:
         probe_budget = max(48, int(round(budget * self.probe_fraction)))
         probe_budget = min(probe_budget, max(48, budget // 5))
 
-        # Repeated center evaluation estimates stochastic inconsistency.
+        # Repeated center evaluation estimates stochastic inconsistency.  Pairwise
+        # dispersion is used instead of plain MAD because a symmetric alternating
+        # signal (+a, -a, +a) otherwise has MAD == 0 around its median.
         center = np.full(dimension, (lo + hi) / 2.0)
         center_vals = [float(objective(center)) for _ in range(self.repeats)]
         used = self.repeats
-        center_med = float(np.median(center_vals))
-        noise_abs = float(np.median(np.abs(np.asarray(center_vals) - center_med)))
+        noise_abs = _repeat_dispersion(center_vals)
 
         n = max(12, min(40, probe_budget - used))
         points = rng.uniform(lo, hi, size=(n, dimension))
@@ -68,7 +84,7 @@ class ResolutiveRegimeRouter:
         used += n
 
         scale = float(np.median(np.abs(values - np.median(values)))) + 1e-12
-        noise_ratio = float(1.4826 * noise_abs / scale)
+        noise_ratio = float(noise_abs / scale)
 
         # Ruggedness: nearby points that change objective disproportionately.
         dmat = np.linalg.norm(points[:, None, :] - points[None, :, :], axis=2)
