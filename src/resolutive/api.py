@@ -8,14 +8,17 @@ from __future__ import annotations
 
 from typing import Literal
 
+from .multires_session import MultiResolutionSession
 from .optimization.common import Objective, OptimizationResult
 from .optimization.hybrid_multires import ResolutiveHybridMultiResolution
 from .optimization.hybrid_multires_robust import ResolutiveHybridMultiResolutionRobust
 from .optimization.regime_router import ResolutiveRegimeRouter
 from .optimization.v5 import ResolutiveV5
 from .optimization.v6 import ResolutiveV6
+from .session import OptimizationSession
 
 Mode = Literal["auto", "v5", "v6", "multires", "robust"]
+SessionMode = Literal["prototype", "multires"]
 
 
 def optimize(
@@ -27,29 +30,7 @@ def optimize(
     seed: int = 0,
     mode: Mode = "auto",
 ) -> OptimizationResult:
-    """Minimize a continuous black-box objective under an evaluation budget.
-
-    Parameters
-    ----------
-    objective:
-        Callable accepting a NumPy vector and returning a scalar objective.
-    dimension:
-        Number of decision variables.
-    bounds:
-        Shared ``(lower, upper)`` bound for every decision variable.
-    budget:
-        Maximum objective-evaluation budget.
-    seed:
-        Reproducibility seed.
-    mode:
-        ``auto`` delegates to the experimental explicit regime router;
-        specialist modes select a specific engine.
-
-    Notes
-    -----
-    The API shape is a v0.x candidate and is not yet guaranteed stable. The
-    ``auto`` router remains experimental until its routing benchmarks pass.
-    """
+    """Minimize a continuous black-box objective under an evaluation budget."""
     engines = {
         "auto": ResolutiveRegimeRouter,
         "v5": ResolutiveV5,
@@ -69,3 +50,37 @@ def optimize(
         budget=budget,
         seed=seed,
     )
+
+
+def create_session(
+    *,
+    dimension: int,
+    bounds: tuple[float, float],
+    budget: int,
+    seed: int = 0,
+    mode: SessionMode = "multires",
+    batch_size: int = 16,
+):
+    """Create an experimental stateful ask/tell optimization session.
+
+    ``mode='multires'`` uses the first incremental Resolutive multiresolution
+    engine. ``mode='prototype'`` preserves the original transport-contract
+    prototype for ablation and backward comparison.
+    """
+    if mode == "multires":
+        return MultiResolutionSession(
+            dimension=dimension,
+            bounds=bounds,
+            budget=budget,
+            seed=seed,
+            batch_size=batch_size,
+        )
+    if mode == "prototype":
+        return OptimizationSession(
+            dimension=dimension,
+            bounds=bounds,
+            budget=budget,
+            seed=seed,
+            batch_size=batch_size,
+        )
+    raise ValueError(f"unknown session mode: {mode!r}")
