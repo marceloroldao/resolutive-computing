@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Literal
 
+from .hybrid_session import HybridRegimeSession
 from .multires_session import MultiResolutionSession
 from .optimization.common import Objective, OptimizationResult
 from .optimization.hybrid_multires import ResolutiveHybridMultiResolution
@@ -18,7 +19,7 @@ from .optimization.v6 import ResolutiveV6
 from .session import OptimizationSession
 
 Mode = Literal["auto", "v5", "v6", "multires", "robust"]
-SessionMode = Literal["prototype", "multires"]
+SessionMode = Literal["prototype", "multires", "hybrid"]
 
 
 def optimize(
@@ -61,12 +62,14 @@ def create_session(
     mode: SessionMode = "multires",
     batch_size: int = 16,
 ):
-    """Create an experimental stateful ask/tell optimization session.
-
-    ``mode='multires'`` uses the first incremental Resolutive multiresolution
-    engine. ``mode='prototype'`` preserves the original transport-contract
-    prototype for ablation and backward comparison.
-    """
+    """Create an experimental stateful ask/tell optimization session."""
+    if mode == "hybrid":
+        return HybridRegimeSession(
+            dimension=dimension,
+            bounds=bounds,
+            budget=budget,
+            seed=seed,
+        )
     if mode == "multires":
         return MultiResolutionSession(
             dimension=dimension,
