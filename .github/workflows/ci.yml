@@ -49,6 +49,12 @@ jobs:
       - name: Versioned reference experiment smoke
         if: matrix.python-version == '3.12'
         run: python experiments/run_reference.py --config experiments/reference_v0.1.json --output-dir /tmp/reference-v0.1 --smoke
+      - name: Incremental Multires comparison
+        if: matrix.python-version == '3.12'
+        run: |
+          python benchmarks/run_multires_session_compare.py --dimension 10 --budget 3000 --seeds 3 --output /tmp/multires_session_compare.csv
+          echo '=== MONOLITHIC VS ASK-TELL MULTIRES ==='
+          cat /tmp/multires_session_compare.csv
       - name: Controlled 10D comparison campaign
         if: matrix.python-version == '3.12'
         run: |
