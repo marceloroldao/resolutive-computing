@@ -18,6 +18,7 @@ from resolutive.optimization.hybrid_multires import ResolutiveHybridMultiResolut
 from resolutive.optimization.hybrid_multires_adaptive import ResolutiveHybridMultiResolutionAdaptive
 from resolutive.optimization.hybrid_multires_robust import ResolutiveHybridMultiResolutionRobust
 from resolutive.optimization.hybrid_regime import ResolutiveHybridRegime
+from resolutive.optimization.regime_router import ResolutiveRegimeRouter
 from resolutive.optimization.v5 import ResolutiveV5
 from resolutive.optimization.v6 import ResolutiveV6
 from resolutive.optimization.v7 import ResolutiveV7
@@ -52,8 +53,8 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seeds: list[int],
         noise_fraction: float, output: Path) -> None:
     if dimension < 2:
         raise ValueError("dimension must be >= 2")
-    if budget < 100:
-        raise ValueError("budget must be >= 100")
+    if budget < 1200:
+        raise ValueError("budget must be >= 1200")
     if seeds < 1 or not instance_seeds:
         raise ValueError("seeds and instance_seeds must be non-empty")
 
@@ -66,6 +67,7 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seeds: list[int],
         "RO-Hybrid-Multires-exp": ResolutiveHybridMultiResolution,
         "RO-Hybrid-Multires-Robust-exp": ResolutiveHybridMultiResolutionRobust,
         "RO-Hybrid-Multires-Adaptive-exp": ResolutiveHybridMultiResolutionAdaptive,
+        "RO-RegimeRouter-exp": ResolutiveRegimeRouter,
     }
     rows: list[dict[str, object]] = []
 
@@ -79,7 +81,7 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seeds: list[int],
             )
             for case_name, noisy in (("shifted_rotated", False), ("shifted_rotated_noisy", True)):
                 for optimizer_name, optimizer_type in optimizers.items():
-                    values, evals = [], []
+                    values, evals, routes = [], [], []
                     for seed in range(seeds):
                         objective = transformed
                         if noisy:
@@ -90,11 +92,15 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seeds: list[int],
                         if optimizer_name.startswith("CMA-ES"):
                             x, _observed, used = _cma_es(objective, dimension, bounds, budget, seed)
                         else:
-                            result = optimizer_type().minimize(
+                            optimizer = optimizer_type()
+                            result = optimizer.minimize(
                                 objective, dimension=dimension, bounds=bounds,
                                 budget=budget, seed=seed,
                             )
                             x, used = result.x, int(result.evaluations)
+                            diagnostics = getattr(optimizer, "last_diagnostics", None)
+                            if diagnostics is not None:
+                                routes.append(diagnostics.selected)
                         values.append(float(transformed(x)))
                         evals.append(used)
                     rows.append({
@@ -107,6 +113,7 @@ def run(*, dimension: int, budget: int, seeds: int, instance_seeds: list[int],
                         "seeds": seeds,
                         "shift_norm": float(np.linalg.norm(shift)),
                         "noise_sigma": noise_sigma if noisy else 0.0,
+                        "routes": ";".join(routes),
                         "median": float(np.median(values)),
                         "mean": float(np.mean(values)),
                         "std": float(np.std(values, ddof=1)) if seeds > 1 else 0.0,
