@@ -10,6 +10,7 @@ from typing import Literal
 
 from .hybrid_multires_session import HybridMultiResolutionSession
 from .hybrid_session import HybridRegimeSession
+from .multires_session import MultiResolutionSession
 from .optimization.common import Objective, OptimizationResult
 from .optimization.hybrid_multires import ResolutiveHybridMultiResolution
 from .optimization.hybrid_multires_robust import ResolutiveHybridMultiResolutionRobust
@@ -64,9 +65,10 @@ def create_session(
 ):
     """Create an experimental stateful ask/tell optimization session.
 
-    ``mode='multires'`` uses the Hybrid-backed multiresolution session.  The
-    historical random-exploration multiresolution prototype remains in the
-    repository for ablation, but is no longer the public default.
+    ``mode='multires'`` uses the Hybrid-backed multiresolution session when
+    enough evaluations are available for its reconnaissance and local-refinement
+    phases.  For short budgets, the historical MultiResolutionSession remains
+    the compatibility fallback so existing callers keep the v0.2 API contract.
     """
     if mode == "hybrid":
         return HybridRegimeSession(
@@ -76,6 +78,14 @@ def create_session(
             seed=seed,
         )
     if mode == "multires":
+        if budget < 800:
+            return MultiResolutionSession(
+                dimension=dimension,
+                bounds=bounds,
+                budget=budget,
+                seed=seed,
+                batch_size=batch_size,
+            )
         return HybridMultiResolutionSession(
             dimension=dimension,
             bounds=bounds,
