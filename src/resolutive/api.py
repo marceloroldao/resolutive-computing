@@ -8,8 +8,8 @@ from __future__ import annotations
 
 from typing import Literal
 
-from .hybrid_multires_session import HybridMultiResolutionSession
-from .hybrid_session import HybridRegimeSession
+from .hybrid_multires_sequential_session import HybridMultiResolutionSequentialSession
+from .hybrid_sequential_session import HybridRegimeSequentialSession
 from .multires_session import MultiResolutionSession
 from .optimization.common import Objective, OptimizationResult
 from .optimization.hybrid_multires import ResolutiveHybridMultiResolution
@@ -66,12 +66,13 @@ def create_session(
     """Create an experimental stateful ask/tell optimization session.
 
     ``mode='multires'`` uses the Hybrid-backed multiresolution session when
-    enough evaluations are available for its reconnaissance and local-refinement
-    phases.  For short budgets, the historical MultiResolutionSession remains
-    the compatibility fallback so existing callers keep the v0.2 API contract.
+    enough evaluations are available for reconnaissance and local refinement.
+    The Hybrid path preserves V2's sequential coordinate-collapse semantics.
+    For short budgets, the historical MultiResolutionSession remains the
+    compatibility fallback so existing callers keep the v0.2 API contract.
     """
     if mode == "hybrid":
-        return HybridRegimeSession(
+        return HybridRegimeSequentialSession(
             dimension=dimension,
             bounds=bounds,
             budget=budget,
@@ -86,7 +87,7 @@ def create_session(
                 seed=seed,
                 batch_size=batch_size,
             )
-        return HybridMultiResolutionSession(
+        return HybridMultiResolutionSequentialSession(
             dimension=dimension,
             bounds=bounds,
             budget=budget,
