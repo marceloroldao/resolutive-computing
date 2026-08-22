@@ -6,8 +6,8 @@ from pathlib import Path
 
 import numpy as np
 
-from resolutive import create_session
 from resolutive.benchmarks.functions import ackley, rastrigin, rosenbrock
+from resolutive.hybrid_sequential_session import HybridRegimeSequentialSession
 from resolutive.optimization.hybrid_regime import ResolutiveHybridRegime
 
 
@@ -19,12 +19,11 @@ FUNCTIONS = {
 
 
 def run_session(objective, *, dimension: int, bounds: tuple[float, float], budget: int, seed: int):
-    session = create_session(
+    session = HybridRegimeSequentialSession(
         dimension=dimension,
         bounds=bounds,
         budget=budget,
         seed=seed,
-        mode="hybrid",
     )
     while not session.done:
         batch = session.ask()
