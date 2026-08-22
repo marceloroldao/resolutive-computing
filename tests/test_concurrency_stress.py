@@ -13,10 +13,13 @@ def _sphere(points: np.ndarray) -> list[float]:
     return np.sum(points * points, axis=1).astype(float).tolist()
 
 
-def _advance_once(registry: PersistentSessionRegistry, session_id: str) -> int:
-    batch = registry.ask(session_id)
-    registry.tell(session_id, _sphere(batch.points))
-    return len(batch.points)
+def _advance_cycles(registry: PersistentSessionRegistry, session_id: str, cycles: int) -> int:
+    completed = 0
+    for _ in range(cycles):
+        batch = registry.ask(session_id)
+        registry.tell(session_id, _sphere(batch.points))
+        completed += len(batch.points)
+    return completed
 
 
 def test_many_independent_sessions_can_advance_concurrently(tmp_path: Path) -> None:
@@ -34,11 +37,13 @@ def test_many_independent_sessions_can_advance_concurrently(tmp_path: Path) -> N
         for i in range(24)
     ]
 
+    # Each session preserves its required ask->tell ordering, while different
+    # sessions advance concurrently as they would under server load.
     with ThreadPoolExecutor(max_workers=12) as pool:
-        futures = [pool.submit(_advance_once, registry, sid) for sid in session_ids for _ in range(4)]
+        futures = [pool.submit(_advance_cycles, registry, sid, 4) for sid in session_ids]
         completed = [future.result() for future in futures]
 
-    assert completed == [4] * (24 * 4)
+    assert completed == [16] * 24
     for sid in session_ids:
         info = registry.info(sid)
         assert info.evaluations == 16
@@ -97,7 +102,7 @@ def test_restart_preserves_pending_batch_under_concurrent_server_use(tmp_path: P
     batch = registry.ask(sid)
 
     restarted = PersistentSessionRegistry(tmp_path)
-    with pytest.raises(RuntimeError, match="tell\(\) must be called"):
+    with pytest.raises(RuntimeError, match=r"tell\(\) must be called"):
         restarted.ask(sid)
 
     restarted.tell(sid, _sphere(batch.points))
