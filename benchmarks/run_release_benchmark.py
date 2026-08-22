@@ -53,6 +53,12 @@ class BudgetedObjective:
         return value
 
 
+def _seeded_start(dimension: int, bounds: tuple[float, float], seed: int) -> np.ndarray:
+    lo, hi = bounds
+    rng = np.random.default_rng(seed)
+    return rng.uniform(lo, hi, size=dimension)
+
+
 def _resolutive(objective, dimension, bounds, budget, seed):
     result = ResolutiveHybridMultiResolution().minimize(
         objective,
@@ -67,7 +73,7 @@ def _resolutive(objective, dimension, bounds, budget, seed):
 def _cma_es(objective, dimension, bounds, budget, seed):
     lo, hi = bounds
     wrapped = BudgetedObjective(objective, budget)
-    x0 = np.full(dimension, (lo + hi) / 2.0)
+    x0 = _seeded_start(dimension, bounds, seed)
     sigma0 = (hi - lo) / 4.0
     es = cma.CMAEvolutionStrategy(
         x0,
@@ -87,9 +93,6 @@ def _cma_es(objective, dimension, bounds, budget, seed):
         if not xs:
             break
         ys = [wrapped(x) for x in xs]
-        # pycma requires a complete generation. If truncation occurred at the
-        # final budget boundary, the observed best is still valid; do not tell
-        # an incomplete generation back to CMA-ES.
         if len(xs) == es.popsize:
             es.tell(xs, ys)
         else:
@@ -126,10 +129,9 @@ def _scipy_de(objective, dimension, bounds, budget, seed):
 
 def _scipy_local(method: str):
     def runner(objective, dimension, bounds, budget, seed):
-        del seed  # deterministic start; seed retained in campaign schema.
         lo, hi = bounds
         wrapped = BudgetedObjective(objective, budget)
-        x0 = np.full(dimension, (lo + hi) / 2.0)
+        x0 = _seeded_start(dimension, bounds, seed)
         options = {"maxfev": budget}
         if method == "Nelder-Mead":
             options.update({"xatol": 0.0, "fatol": 0.0, "maxiter": budget * 2})
