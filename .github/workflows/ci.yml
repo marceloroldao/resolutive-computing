@@ -79,6 +79,12 @@ jobs:
           python benchmarks/run_strong_baselines.py --dimension 10 --budget 3000 --seeds 8 --output /tmp/strong_baselines_10d.csv
           echo '=== STRONG BASELINES 10D ==='
           cat /tmp/strong_baselines_10d.csv
+      - name: Release benchmark smoke
+        if: matrix.python-version == '3.12'
+        run: |
+          python benchmarks/run_release_benchmark.py --dimensions 2 --budget 200 --seeds 1 --raw-output /tmp/release_raw.csv --summary-output /tmp/release_summary.csv
+          echo '=== RELEASE BENCHMARK SMOKE ==='
+          cat /tmp/release_summary.csv
       - name: Dimensional scaling campaign
         if: matrix.python-version == '3.12'
         run: |
