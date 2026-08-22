@@ -14,6 +14,7 @@ import numpy as np
 
 from .hybrid_multires_sequential_session import HybridMultiResolutionSequentialSession
 from .hybrid_sequential_session import HybridRegimeSequentialSession
+from .session import OptimizationSession
 from .specialist_sessions import V5Session
 from .spiral_session import SpiralRefineSession
 from .v2_sequential_session import V2SequentialSession
@@ -24,6 +25,7 @@ CHECKPOINT_VERSION = 1
 _ALLOWED_CLASSES = {
     cls.__name__: cls
     for cls in (
+        OptimizationSession,
         HybridMultiResolutionSequentialSession,
         HybridRegimeSequentialSession,
         V2SequentialSession,
