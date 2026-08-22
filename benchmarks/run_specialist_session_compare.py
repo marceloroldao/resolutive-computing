@@ -9,7 +9,8 @@ import numpy as np
 from resolutive.benchmarks.functions import ackley, rastrigin, rosenbrock
 from resolutive.optimization.v2 import ResolutiveV2
 from resolutive.optimization.v5 import ResolutiveV5
-from resolutive.specialist_sessions import V2Session, V5Session
+from resolutive.specialist_sessions import V5Session
+from resolutive.v2_sequential_session import V2SequentialSession
 
 FUNCTIONS = {
     "ackley": (ackley, (-32.768, 32.768)),
@@ -37,12 +38,12 @@ def run(*, dimension: int, budget: int, seeds: int, output: str) -> None:
         for seed in range(seeds):
             pairs = [
                 (
-                    "v2",
+                    "v2_sequential",
                     ResolutiveV2().minimize(
                         objective, dimension=dimension, bounds=bounds, budget=budget, seed=seed
                     ),
                     run_session(
-                        V2Session(
+                        V2SequentialSession(
                             dimension=dimension, bounds=bounds, budget=budget, seed=seed
                         ),
                         objective,
