@@ -1,0 +1,41 @@
+name: V1 Release Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      seeds:
+        description: Number of seeds per benchmark/method
+        required: false
+        default: "10"
+      dimensions:
+        description: Space-separated dimensions
+        required: false
+        default: "2 10 30"
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -e ".[bench]"
+      - name: Run release benchmark
+        run: |
+          python benchmarks/run_release_benchmark.py \
+            --dimensions ${{ inputs.dimensions }} \
+            --seeds ${{ inputs.seeds }} \
+            --raw-output results/release-benchmark-v1/raw.csv \
+            --summary-output results/release-benchmark-v1/summary.csv
+          echo '=== V1 RELEASE BENCHMARK SUMMARY ==='
+          cat results/release-benchmark-v1/summary.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-benchmark-v1
+          path: results/release-benchmark-v1/
+          if-no-files-found: error
