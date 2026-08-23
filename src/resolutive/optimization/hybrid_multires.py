@@ -46,11 +46,15 @@ class ResolutiveHybridMultiResolution:
         if dimension < 2:
             raise ValueError("dimension must be >= 2")
         lo, hi = validate_bounds(bounds)
-        if budget < 800:
-            raise ValueError("budget must be >= 800")
 
         local_budget = max(220, int(round(budget * self.local_fraction)))
         core_budget = budget - local_budget
+        if core_budget < 600:
+            raise ValueError(
+                "budget is too small for the configured multiresolution split: "
+                f"core budget would be {core_budget}, but RO-Hybrid requires >= 600"
+            )
+
         core = ResolutiveHybridRegime(local_fraction=0.10).minimize(
             objective,
             dimension=dimension,
