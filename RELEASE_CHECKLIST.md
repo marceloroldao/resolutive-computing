@@ -31,7 +31,7 @@ This checklist defines the release gates for the first PC/server-focused v1.0. A
 - [x] HTTP errors distinguish not-found and ask/tell protocol conflicts.
 - [x] Python client supports create, attach, ask, tell, result, checkpoint and delete.
 - [x] API v1 contract is documented in `API_V1_CONTRACT.md`.
-- [ ] Final compatibility review confirms no accidental breaking changes to the documented v1 surface.
+- [x] Final compatibility review confirms no accidental breaking changes to the documented v1 surface.
 
 ## Release benchmark — BLOCKING
 
@@ -47,17 +47,17 @@ This checklist defines the release gates for the first PC/server-focused v1.0. A
 
 ## Packaging — BLOCKING
 
-The `Package Validation` workflow automates the clean build/install gates below. Items remain unchecked until the frozen release commit completes that workflow successfully.
+The `Package Validation` workflow automates the clean build/install gates below. The package gates below were validated successfully on commit `732dafbc390ef83370a0173f96afe29bd73502b9` by Package Validation run 6. They must be rerun once more on the final frozen release-candidate commit if that commit changes package contents.
 
 - [ ] Package version is changed from development metadata only when `v1.0-rc1` is actually cut.
-- [ ] Source distribution and wheel build successfully from a clean checkout.
-- [ ] Wheel installs in a clean Python 3.10 environment.
-- [ ] Wheel installs in a clean Python 3.11 environment.
-- [ ] Wheel installs in a clean Python 3.12 environment.
-- [ ] `import resolutive` succeeds from the installed wheel.
-- [ ] Minimal `optimize()` smoke succeeds from the installed wheel.
-- [ ] Client extra installs and imports `ResolutiveClient`.
-- [ ] Server extra installs and creates the FastAPI application.
+- [x] Source distribution and wheel build successfully from a clean checkout.
+- [x] Wheel installs in a clean Python 3.10 environment.
+- [x] Wheel installs in a clean Python 3.11 environment.
+- [x] Wheel installs in a clean Python 3.12 environment.
+- [x] `import resolutive` succeeds from the installed wheel.
+- [x] Minimal `optimize()` smoke succeeds from the installed wheel.
+- [x] Client extra installs and imports `ResolutiveClient`.
+- [x] Server extra installs and creates the FastAPI application.
 
 ## Public API freeze
 
