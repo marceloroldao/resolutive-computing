@@ -99,7 +99,7 @@ jobs:
               sphere,
               dimension=3,
               bounds=(-5.0, 5.0),
-              budget=128,
+              budget=1000,
               seed=0,
           )
           if not np.isfinite(result.fun):
