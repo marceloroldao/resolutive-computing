@@ -6,6 +6,7 @@ transport-agnostic; FastAPI is an optional dependency exposed through the
 """
 from __future__ import annotations
 
+from importlib.metadata import PackageNotFoundError, version
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
@@ -27,6 +28,13 @@ class TellRequest(BaseModel):
     values: list[float]
 
 
+def _package_version() -> str:
+    try:
+        return version("resolutive-computing")
+    except PackageNotFoundError:  # pragma: no cover - source tree without installation
+        return "0+unknown"
+
+
 def _info_dict(registry: SessionRegistry, session_id: str) -> dict[str, object]:
     info = registry.info(session_id)
     return {
@@ -40,7 +48,7 @@ def _info_dict(registry: SessionRegistry, session_id: str) -> dict[str, object]:
 
 def create_app(registry: SessionRegistry | None = None) -> FastAPI:
     registry = registry or SessionRegistry()
-    app = FastAPI(title="Resolutive Computing API", version="0.2-dev")
+    app = FastAPI(title="Resolutive Computing API", version=_package_version())
     app.state.registry = registry
 
     def missing(exc: KeyError) -> HTTPException:
