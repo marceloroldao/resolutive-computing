@@ -2,6 +2,16 @@ name: Package Validation
 
 on:
   workflow_dispatch:
+  push:
+    branches: [develop/v0.2-core-api]
+    paths:
+      - "pyproject.toml"
+      - "src/**"
+      - "README.md"
+      - "LICENSE"
+      - "CITATION.cff"
+      - "CHANGELOG.md"
+      - ".github/workflows/package-validation.yml"
   pull_request:
     paths:
       - "pyproject.toml"
