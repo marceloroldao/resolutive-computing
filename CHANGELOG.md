@@ -11,6 +11,18 @@ The project follows semantic versioning for public releases once the v1 API is f
 - Clean package build/install verification across supported Python versions.
 - Final API compatibility review before `1.0.0rc1`.
 
+## [0.2.0-rc3] - 2026-08-23
+
+### Fixed
+- Replaced `CITATION.cff` with a minimal Citation File Format 1.2.0 record aligned with GitHub's documented example.
+- Removed the non-SPDX custom license identifier from citation metadata; authoritative licensing remains in `LICENSE`.
+- Kept explicit version and release date metadata for archival/citation tooling.
+- Bumped the Python package version to `0.2.0rc3`.
+
+### Status
+- This pre-release supersedes `v0.2.0-rc1` and `v0.2.0-rc2` for citation and archival purposes.
+- The software and scientific benchmark scope are unchanged; rc3 is a metadata/parser-compatibility correction.
+
 ## [0.2.0-rc2] - 2026-08-23
 
 ### Fixed
