@@ -1,5 +1,7 @@
 # Resolutive Computing
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22071892.svg)](https://doi.org/10.5281/zenodo.22071892)
+
 **Resolutive Computing** is a modular research and engineering framework for resolutive computation, black-box optimization, adaptive search, benchmarking, and PC/server deployment.
 
 The current v1.0 development line focuses on continuous black-box optimization with deterministic stateful `ask/tell` sessions, checkpoint/restart, multi-session registries, an optional HTTP service, and a Python client.
@@ -263,7 +265,9 @@ Commercial use requires separate written authorization or a commercial license f
 
 ## Citation
 
-Citation metadata is provided in `CITATION.cff`. Cite the exact release or commit used until an archival DOI is assigned.
+Citation metadata is provided in `CITATION.cff`.
+
+Archived release DOI: [10.5281/zenodo.22071892](https://doi.org/10.5281/zenodo.22071892)
 
 ## Author
 
