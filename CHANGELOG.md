@@ -11,6 +11,18 @@ The project follows semantic versioning for public releases once the v1 API is f
 - Clean package build/install verification across supported Python versions.
 - Final API compatibility review before `1.0.0rc1`.
 
+## [0.2.0-rc2] - 2026-08-23
+
+### Fixed
+- Corrected `CITATION.cff` metadata for GitHub/Zenodo citation parsing.
+- Added explicit release version and release date to citation metadata.
+- Removed the custom SPDX-like license identifier from `CITATION.cff`; the authoritative project licensing terms remain in the repository `LICENSE` file.
+- Bumped the Python package version to `0.2.0rc2`.
+
+### Status
+- This is a metadata-corrected pre-release replacing `v0.2.0-rc1` for citation/archival purposes.
+- No scientific benchmark claims were changed by this metadata-only release correction.
+
 ## [0.2.0-rc1] - 2026-08-23
 
 ### Added
