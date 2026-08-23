@@ -47,6 +47,8 @@ This checklist defines the release gates for the first PC/server-focused v1.0. A
 
 ## Packaging — BLOCKING
 
+The `Package Validation` workflow automates the clean build/install gates below. Items remain unchecked until the frozen release commit completes that workflow successfully.
+
 - [ ] Package version is changed from development metadata only when `v1.0-rc1` is actually cut.
 - [ ] Source distribution and wheel build successfully from a clean checkout.
 - [ ] Wheel installs in a clean Python 3.10 environment.
@@ -79,12 +81,14 @@ The following top-level names are considered part of the v1 Python compatibility
 
 Additional experimental implementation classes may remain importable from submodules but are not automatically covered by the v1 compatibility promise.
 
+The documented HTTP routes and Python client symbols are regression-guarded by `tests/test_api_v1_contract.py`.
+
 ## Documentation and release hygiene
 
 - [x] README documents local Python, ask/tell, server and client usage.
 - [x] Source-available/non-commercial licensing language is explicit.
 - [ ] Changelog entry for `v1.0-rc1` is prepared from the frozen commit.
-- [ ] Known limitations are documented.
+- [x] Known limitations are documented in `KNOWN_LIMITATIONS.md`.
 - [ ] Benchmark configuration and exact frozen commit are cited in release notes.
 - [ ] `CITATION.cff` version/date are synchronized with the release candidate.
 - [ ] Tag and GitHub release are created only after all blocking RC gates pass.
