@@ -1,0 +1,15 @@
+{
+  "campaign": "reference-campaign-10d",
+  "status": "experimental",
+  "dimension": 10,
+  "budget": 3000,
+  "seeds": [0,1,2,3,4,5,6,7],
+  "benchmarks": ["ackley", "rastrigin", "rosenbrock"],
+  "optimizers": ["RandomSearch", "SimulatedAnnealing", "DifferentialEvolution", "RO-V2", "RO-V5"],
+  "pr_head_commit": "4b290078fba966b7937081bef9c70143320decf9",
+  "ci_merge_commit": "cabf8671a4c33fe60bdec9d4806a67e14b286109",
+  "github_actions_run_id": 32087820011,
+  "python": "3.12.13",
+  "rsms_compatibility": "1.0-rc.1",
+  "claim_policy": "These results are internal controlled references only. They do not establish state-of-the-art superiority. Stronger external baselines and standardized COCO/BBOB evaluation are required before publication claims."
+}
