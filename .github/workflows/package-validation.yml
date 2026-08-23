@@ -57,12 +57,12 @@ jobs:
           python -m pip install --upgrade pip build
           python -m build --wheel
       - name: Install wheel only
-        run: |
-          python -m pip install dist/*.whl
-      - name: Import public API
+        run: python -m pip install dist/*.whl
+      - name: Import frozen public API
         run: |
           python - <<'PY'
           import resolutive
+
           required = {
               "optimize",
               "create_session",
@@ -74,10 +74,74 @@ jobs:
               "PersistentSessionRegistry",
               "OptimizationResult",
               "OptimizationSession",
+              "MultiResolutionSession",
+              "MultiResolutionState",
               "AskBatch",
+              "ResolutiveV2",
+              "ResolutiveV5",
           }
           missing = sorted(name for name in required if not hasattr(resolutive, name))
           if missing:
               raise SystemExit(f"missing public API symbols: {missing}")
-          print("public API import OK")
+          print("frozen public API import OK")
           PY
+      - name: Run installed-wheel optimize smoke
+        run: |
+          python - <<'PY'
+          import numpy as np
+          from resolutive import optimize
+
+          def sphere(x):
+              x = np.asarray(x, dtype=float)
+              return float(np.dot(x, x))
+
+          result = optimize(
+              sphere,
+              dimension=3,
+              bounds=(-5.0, 5.0),
+              budget=128,
+              seed=0,
+          )
+          if not np.isfinite(result.fun):
+              raise SystemExit("optimize smoke returned a non-finite objective")
+          if np.asarray(result.x).shape != (3,):
+              raise SystemExit(f"unexpected solution shape: {np.asarray(result.x).shape}")
+          print(f"installed-wheel optimize smoke OK: fun={result.fun}")
+          PY
+
+  extras:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        extra: [client, server]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel
+      - name: Install wheel with ${{ matrix.extra }} extra
+        run: |
+          WHEEL=$(ls dist/*.whl)
+          python -m pip install "${WHEEL}[${{ matrix.extra }}]"
+      - name: Validate optional extra
+        run: |
+          if [ "${{ matrix.extra }}" = "client" ]; then
+            python - <<'PY'
+          from resolutive.client import ResolutiveClient
+          assert ResolutiveClient is not None
+          print("client extra import OK")
+          PY
+          else
+            python - <<'PY'
+          from resolutive.http_api import create_app
+          app = create_app()
+          if app is None:
+              raise SystemExit("create_app returned None")
+          print("server extra application factory OK")
+          PY
+          fi
