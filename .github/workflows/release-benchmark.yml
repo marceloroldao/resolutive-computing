@@ -11,6 +11,10 @@ on:
         description: Space-separated dimensions
         required: false
         default: "2 10 30"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/release-benchmark.yml"
 
 jobs:
   benchmark:
@@ -29,9 +33,13 @@ jobs:
           python -m pip install -e ".[bench]"
       - name: Run release benchmark
         run: |
+          DIMENSIONS="${{ inputs.dimensions }}"
+          SEEDS="${{ inputs.seeds }}"
+          if [ -z "$DIMENSIONS" ]; then DIMENSIONS="2 10 30"; fi
+          if [ -z "$SEEDS" ]; then SEEDS="10"; fi
           python benchmarks/run_release_benchmark.py \
-            --dimensions ${{ inputs.dimensions }} \
-            --seeds ${{ inputs.seeds }} \
+            --dimensions $DIMENSIONS \
+            --seeds $SEEDS \
             --raw-output results/release-benchmark-v1/raw.csv \
             --summary-output results/release-benchmark-v1/summary.csv
           echo '=== V1 RELEASE BENCHMARK SUMMARY ==='
