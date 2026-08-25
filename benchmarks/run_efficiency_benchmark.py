@@ -1,17 +1,19 @@
 """Computational-efficiency benchmark for Resolutive Computing.
 
 Measures quality and resource cost separately from the release quality benchmark.
-Metrics are collected per optimizer/run under the same benchmark, dimension,
-seed and strict objective-call budget:
+Each optimizer/seed/scenario executes in a fresh Python subprocess so process
+memory retained by one optimizer cannot contaminate another. Optimizer order is
+rotated deterministically by seed to reduce systematic ordering effects.
 
+Metrics collected per isolated optimizer/run:
 - final best objective value
 - objective evaluations used
 - first evaluation reaching absolute targets 1e-2 and 1e-6
-- wall-clock time (perf_counter)
-- CPU process time
+- wall-clock time around optimizer execution only
+- CPU process time around optimizer execution only
 - sampled process RSS baseline/peak/delta
 
-Wall time and RSS are infrastructure-sensitive. They are intended for
+Wall time and RSS remain infrastructure-sensitive. They are intended for
 same-runner comparative evidence, not hardware-independent claims.
 """
 from __future__ import annotations
@@ -19,8 +21,11 @@ from __future__ import annotations
 import argparse
 import csv
 import gc
+import json
 import os
 import platform
+import subprocess
+import sys
 import threading
 import time
 from dataclasses import dataclass, field
@@ -80,40 +85,82 @@ class RSSSampler:
             pass
 
 
+def _worker(benchmark_name: str, dimension: int, budget: int, seed: int, optimizer_name: str) -> dict[str, object]:
+    if benchmark_name not in DEFAULT_BENCHMARKS:
+        raise ValueError(f"unknown benchmark: {benchmark_name}")
+    if optimizer_name not in METHODS:
+        raise ValueError(f"unknown optimizer: {optimizer_name}")
+
+    objective, bounds = DEFAULT_BENCHMARKS[benchmark_name]
+    runner = METHODS[optimizer_name]
+    gc.collect()
+    tracked = TrackedObjective(objective)
+    sampler = RSSSampler()
+    cpu_start = time.process_time()
+    wall_start = time.perf_counter()
+    with sampler:
+        value, used = runner(tracked, dimension, bounds, budget, seed)
+    wall_s = time.perf_counter() - wall_start
+    cpu_s = time.process_time() - cpu_start
+
+    if int(used) != tracked.evaluations:
+        raise RuntimeError(
+            f"evaluation accounting mismatch for {optimizer_name}: runner={used} tracked={tracked.evaluations}"
+        )
+
+    return {
+        "benchmark": benchmark_name,
+        "dimension": dimension,
+        "budget": budget,
+        "seed": seed,
+        "optimizer": optimizer_name,
+        "fun": float(value),
+        "evaluations": int(used),
+        "tracked_evaluations": tracked.evaluations,
+        "evals_to_1e-2": tracked.hits[1e-2] if tracked.hits[1e-2] is not None else "",
+        "evals_to_1e-6": tracked.hits[1e-6] if tracked.hits[1e-6] is not None else "",
+        "wall_time_s": wall_s,
+        "cpu_time_s": cpu_s,
+        "rss_baseline_bytes": sampler.baseline,
+        "rss_peak_bytes": sampler.peak,
+        "rss_delta_bytes": max(0, sampler.peak - sampler.baseline),
+    }
+
+
+def _isolated_run(script: Path, benchmark_name: str, dimension: int, budget: int, seed: int, optimizer_name: str) -> dict[str, object]:
+    cmd = [
+        sys.executable,
+        str(script),
+        "--worker",
+        "--worker-benchmark", benchmark_name,
+        "--worker-dimension", str(dimension),
+        "--worker-budget", str(budget),
+        "--worker-seed", str(seed),
+        "--worker-optimizer", optimizer_name,
+    ]
+    completed = subprocess.run(cmd, check=True, capture_output=True, text=True)
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    if not lines:
+        raise RuntimeError(f"worker produced no output for {benchmark_name}/{dimension}D/{optimizer_name}/seed={seed}")
+    return json.loads(lines[-1])
+
+
+def _rotated_methods(seed: int) -> list[str]:
+    names = list(METHODS)
+    shift = seed % len(names)
+    return names[shift:] + names[:shift]
+
+
 def run(*, dimensions: list[int], seeds: int, raw_output: Path, summary_output: Path, budget_override: int | None = None) -> None:
     rows: list[dict[str, object]] = []
+    script = Path(__file__).resolve()
 
     for dimension in dimensions:
         budget = budget_override if budget_override is not None else default_budget(dimension)
-        for benchmark_name, (objective, bounds) in DEFAULT_BENCHMARKS.items():
+        for benchmark_name in DEFAULT_BENCHMARKS:
             for seed in range(seeds):
-                for optimizer_name, runner in METHODS.items():
-                    gc.collect()
-                    tracked = TrackedObjective(objective)
-                    sampler = RSSSampler()
-                    cpu_start = time.process_time()
-                    wall_start = time.perf_counter()
-                    with sampler:
-                        value, used = runner(tracked, dimension, bounds, budget, seed)
-                    wall_s = time.perf_counter() - wall_start
-                    cpu_s = time.process_time() - cpu_start
-                    rows.append({
-                        "benchmark": benchmark_name,
-                        "dimension": dimension,
-                        "budget": budget,
-                        "seed": seed,
-                        "optimizer": optimizer_name,
-                        "fun": value,
-                        "evaluations": used,
-                        "tracked_evaluations": tracked.evaluations,
-                        "evals_to_1e-2": tracked.hits[1e-2] if tracked.hits[1e-2] is not None else "",
-                        "evals_to_1e-6": tracked.hits[1e-6] if tracked.hits[1e-6] is not None else "",
-                        "wall_time_s": wall_s,
-                        "cpu_time_s": cpu_s,
-                        "rss_baseline_bytes": sampler.baseline,
-                        "rss_peak_bytes": sampler.peak,
-                        "rss_delta_bytes": max(0, sampler.peak - sampler.baseline),
-                    })
+                for optimizer_name in _rotated_methods(seed):
+                    rows.append(_isolated_run(script, benchmark_name, dimension, budget, seed, optimizer_name))
 
     raw_output.parent.mkdir(parents=True, exist_ok=True)
     with raw_output.open("w", newline="", encoding="utf-8") as fh:
@@ -170,18 +217,40 @@ def run(*, dimensions: list[int], seeds: int, raw_output: Path, summary_output: 
     print(f"raw={raw_output} summary={summary_output}")
 
 
-if __name__ == "__main__":
+def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dimensions", type=int, nargs="+", default=[2, 10, 30])
     parser.add_argument("--seeds", type=int, default=10)
     parser.add_argument("--budget", type=int, default=None)
     parser.add_argument("--raw-output", type=Path, default=Path("results/efficiency-benchmark-v1/raw.csv"))
     parser.add_argument("--summary-output", type=Path, default=Path("results/efficiency-benchmark-v1/summary.csv"))
-    args = parser.parse_args()
-    run(
-        dimensions=args.dimensions,
-        seeds=args.seeds,
-        raw_output=args.raw_output,
-        summary_output=args.summary_output,
-        budget_override=args.budget,
-    )
+    parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--worker-benchmark", help=argparse.SUPPRESS)
+    parser.add_argument("--worker-dimension", type=int, help=argparse.SUPPRESS)
+    parser.add_argument("--worker-budget", type=int, help=argparse.SUPPRESS)
+    parser.add_argument("--worker-seed", type=int, help=argparse.SUPPRESS)
+    parser.add_argument("--worker-optimizer", help=argparse.SUPPRESS)
+    return parser
+
+
+if __name__ == "__main__":
+    args = _parser().parse_args()
+    if args.worker:
+        required = [args.worker_benchmark, args.worker_dimension, args.worker_budget, args.worker_seed, args.worker_optimizer]
+        if any(value is None for value in required):
+            raise SystemExit("incomplete worker arguments")
+        print(json.dumps(_worker(
+            str(args.worker_benchmark),
+            int(args.worker_dimension),
+            int(args.worker_budget),
+            int(args.worker_seed),
+            str(args.worker_optimizer),
+        ), separators=(",", ":")))
+    else:
+        run(
+            dimensions=args.dimensions,
+            seeds=args.seeds,
+            raw_output=args.raw_output,
+            summary_output=args.summary_output,
+            budget_override=args.budget,
+        )
