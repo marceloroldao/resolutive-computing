@@ -44,9 +44,9 @@ This checklist defines the release gates for the first PC/server-focused v1.0. A
 - [x] Computational-efficiency benchmark exists separately from solution-quality ranking.
 - [x] Efficiency campaign records wall time, CPU time, sampled RSS, objective evaluations and evaluations-to-target.
 - [ ] Full release campaign completes for the frozen commit.
-- [ ] Full efficiency campaign completes for the frozen commit on a single documented runner class.
-- [ ] Results are reviewed for failures, pathological regimes and unsupported superiority claims.
-- [ ] Efficiency results are reviewed as infrastructure-sensitive measurements, not hardware-independent claims.
+- [x] Full efficiency campaign completes for commit `3b9504742d89ce4af78688fb54601bd4c7dcf445` on a single documented runner class (GitHub Actions run `32837996828`).
+- [x] Results are reviewed for failures, pathological regimes and unsupported superiority claims; findings are recorded in `EFFICIENCY_BENCHMARK_V1.md`.
+- [x] Efficiency results are reviewed as infrastructure-sensitive measurements, not hardware-independent claims.
 - [ ] Release notes state where Resolutive wins, ties and loses rather than claiming universal superiority.
 
 ## Packaging — BLOCKING
@@ -94,7 +94,7 @@ The documented HTTP routes and Python client symbols are regression-guarded by `
 - [ ] Changelog entry for `v1.0-rc1` is prepared from the frozen commit.
 - [x] Known limitations are documented in `KNOWN_LIMITATIONS.md`.
 - [ ] Benchmark configuration and exact frozen commit are cited in release notes.
-- [ ] Computational-efficiency configuration and exact frozen commit are cited in release notes.
+- [x] Computational-efficiency configuration and reviewed commit are cited in `EFFICIENCY_BENCHMARK_V1.md`.
 - [ ] `CITATION.cff` version/date are synchronized with the release candidate.
 - [ ] Tag and GitHub release are created only after all blocking RC gates pass.
 
