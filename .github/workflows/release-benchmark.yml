@@ -45,6 +45,51 @@ jobs:
             --summary-output results/release-benchmark-v1/summary.csv
           echo '=== V1 RELEASE BENCHMARK SUMMARY ==='
           cat results/release-benchmark-v1/summary.csv
+      - name: Analyze release benchmark
+        run: |
+          python benchmarks/analyze_release_benchmark.py \
+            --summary results/release-benchmark-v1/summary.csv \
+            --output results/release-benchmark-v1/ranking.csv | tee results/release-benchmark-v1/analysis.txt
+          echo '=== V1 RELEASE BENCHMARK RANKING ==='
+          cat results/release-benchmark-v1/ranking.csv
+          echo '=== V1 RELEASE BENCHMARK HEAD-TO-HEAD ==='
+          cat results/release-benchmark-v1/analysis.txt
+      - name: Record reproducibility manifest
+        run: |
+          DIMENSIONS="${{ inputs.dimensions }}"
+          SEEDS="${{ inputs.seeds }}"
+          if [ -z "$DIMENSIONS" ]; then DIMENSIONS="2 10 30"; fi
+          if [ -z "$SEEDS" ]; then SEEDS="10"; fi
+          export DIMENSIONS SEEDS
+          python - <<'PY'
+          import json
+          import os
+          import platform
+          from pathlib import Path
+
+          import cma
+          import numpy
+          import pandas
+          import scipy
+
+          manifest = {
+              "commit": os.environ["GITHUB_SHA"],
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "workflow_run_number": os.environ["GITHUB_RUN_NUMBER"],
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "dimensions": [int(value) for value in os.environ["DIMENSIONS"].split()],
+              "seeds": int(os.environ["SEEDS"]),
+              "budget_rule": "max(1000, 300 * dimension)",
+              "python": platform.python_version(),
+              "numpy": numpy.__version__,
+              "scipy": scipy.__version__,
+              "pandas": pandas.__version__,
+              "cma": cma.__version__,
+          }
+          path = Path("results/release-benchmark-v1/manifest.json")
+          path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          print(path.read_text(encoding="utf-8"))
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: release-benchmark-v1
