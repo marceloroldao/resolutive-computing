@@ -41,8 +41,12 @@ This checklist defines the release gates for the first PC/server-focused v1.0. A
 - [x] Initial-point bias at known optima has been removed.
 - [x] Raw and aggregated CSV output is produced by the campaign.
 - [x] Automatic win/tie/loss analysis is available.
+- [x] Computational-efficiency benchmark exists separately from solution-quality ranking.
+- [x] Efficiency campaign records wall time, CPU time, sampled RSS, objective evaluations and evaluations-to-target.
 - [ ] Full release campaign completes for the frozen commit.
+- [ ] Full efficiency campaign completes for the frozen commit on a single documented runner class.
 - [ ] Results are reviewed for failures, pathological regimes and unsupported superiority claims.
+- [ ] Efficiency results are reviewed as infrastructure-sensitive measurements, not hardware-independent claims.
 - [ ] Release notes state where Resolutive wins, ties and loses rather than claiming universal superiority.
 
 ## Packaging — BLOCKING
@@ -90,9 +94,10 @@ The documented HTTP routes and Python client symbols are regression-guarded by `
 - [ ] Changelog entry for `v1.0-rc1` is prepared from the frozen commit.
 - [x] Known limitations are documented in `KNOWN_LIMITATIONS.md`.
 - [ ] Benchmark configuration and exact frozen commit are cited in release notes.
+- [ ] Computational-efficiency configuration and exact frozen commit are cited in release notes.
 - [ ] `CITATION.cff` version/date are synchronized with the release candidate.
 - [ ] Tag and GitHub release are created only after all blocking RC gates pass.
 
 ## Promotion rule
 
-`v1.0-rc1` may be cut when the full release benchmark, packaging checks and API compatibility review are green. Stable `v1.0` requires the RC to remain reproducible with no release-blocking defects discovered during final validation.
+`v1.0-rc1` may be cut when the full release benchmark, computational-efficiency campaign, packaging checks and API compatibility review are green. Stable `v1.0` requires the RC to remain reproducible with no release-blocking defects discovered during final validation.
