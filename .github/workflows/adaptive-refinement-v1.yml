@@ -34,6 +34,7 @@ jobs:
         run: |
           SEEDS="${{ inputs.seeds }}"
           if [ -z "$SEEDS" ]; then SEEDS="10"; fi
+          mkdir -p results/adaptive-refinement-v1
           python experiments/benchmark_adaptive_refinement_v1.py \
             --dimensions 2 10 30 \
             --seeds "$SEEDS" \
