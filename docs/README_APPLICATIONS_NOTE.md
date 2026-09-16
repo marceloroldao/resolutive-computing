@@ -1,0 +1,1 @@
+Application documentation is maintained in APPLICATIONS.md.
