@@ -1,0 +1,1 @@
+Embedded targets will be considered after the PC/server core is validated and stabilized.
