@@ -1,0 +1,1 @@
+README applications section and detailed APPLICATIONS.md are the authoritative documentation for this branch.
