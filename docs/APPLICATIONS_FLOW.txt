@@ -1,0 +1,1 @@
+Problem -> candidates -> optimizer -> evaluation -> feedback -> best configuration
