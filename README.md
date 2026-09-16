@@ -29,6 +29,16 @@ Resolutive Computing may use computational constructs inspired by Resolutive Sci
 - Dimensional scaling tests
 - Future COCO/BBOB integration
 
+## Applications
+
+Resolutive Computing targets problems that require searching large spaces of possible configurations while minimizing the number or cost of evaluations.
+
+Target domains include engineering design, industrial process and energy optimization, simulation-based and expensive black-box optimization, software parameter tuning, resource allocation and scheduling, autonomous-system planning, network and distributed-system optimization, multi-agent optimization, and scientific parameter estimation.
+
+Routing, robotics, IoT and embedded optimization are candidate future domains after independent benchmarking. The current implementation priority is PC/server execution and reproducible validation.
+
+These are target application domains, not claims of demonstrated superiority. See [`docs/APPLICATIONS.md`](docs/APPLICATIONS.md) for the application model and conceptual optimization loop.
+
 ## Scientific principles
 
 1. Same evaluation budget for competing optimizers.
