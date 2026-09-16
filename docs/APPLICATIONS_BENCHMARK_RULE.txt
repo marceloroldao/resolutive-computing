@@ -1,0 +1,1 @@
+Compare under equal evaluation budgets, multiple random seeds and recorded configurations.
