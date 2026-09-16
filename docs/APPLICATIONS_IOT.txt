@@ -1,0 +1,1 @@
+IoT remains a candidate application pending future embedded implementation and validation.
