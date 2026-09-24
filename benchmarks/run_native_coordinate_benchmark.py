@@ -66,7 +66,7 @@ def compile_cpp(root: Path, output: Path) -> None:
 
 def run_cpp(binary: Path, dimension: int, budget: int, seed: int, repeats: int) -> tuple[float, int, float, int, int, int, int]:
     cp = subprocess.run([str(binary), str(dimension), str(budget), str(seed), str(repeats)], check=True, text=True, capture_output=True)
-    m = re.fullmatch(r"fun=([^ ]+) evaluations=(\d+) seconds=([^ ]+) repeats=(\d+) sweeps=(\d+) productive_sweeps=(\d+) contractions=(\d+) accepted_moves=(\d+)\\n?", cp.stdout)
+    m = re.fullmatch(r"fun=([^ ]+) evaluations=(\d+) seconds=([^ ]+) repeats=(\d+) sweeps=(\d+) productive_sweeps=(\d+) contractions=(\d+) accepted_moves=(\d+)\n?", cp.stdout)
     if not m:
         raise RuntimeError(f"unexpected C++ output: {cp.stdout!r}")
     return float(m.group(1)), int(m.group(2)), float(m.group(3)), int(m.group(5)), int(m.group(6)), int(m.group(7)), int(m.group(8))
