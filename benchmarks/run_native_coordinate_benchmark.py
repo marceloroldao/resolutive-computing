@@ -107,7 +107,7 @@ def main() -> None:
             "speedup_python_over_cpp": speedup,
         }
         rows.append(row)
-        print(f"{dim}D parity={parity} evals={py_evals} python={py_seconds:.6f}s cpp={cpp_seconds:.6f}s speedup={speedup:.2f}x delta={fun_delta:.3e}")
+        print(f"{dim}D parity={parity} py_evals={py_evals} cpp_evals={cpp_evals} eval_delta={cpp_evals-py_evals:+d} python={py_seconds:.6f}s cpp={cpp_seconds:.6f}s speedup={speedup:.2f}x py_fun={py_fun:.17g} cpp_fun={cpp_fun:.17g} delta={fun_delta:.3e}")
         if not parity:
             raise SystemExit(f"parity failure at {dim}D")
 
