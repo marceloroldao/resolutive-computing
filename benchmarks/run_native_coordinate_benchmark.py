@@ -28,15 +28,17 @@ def initial_point(dimension: int, lo: float, hi: float, seed: int) -> np.ndarray
     return np.asarray([lo + span * (((i * 37 + seed * 101 + 17) % 1000) / 999.0) for i in range(dimension)], dtype=float)
 
 
-def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int]:
+def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int, int, int, int, int]:
     lo, hi = -32.768, 32.768
     span = hi - lo
     best_x = initial_point(dimension, lo, hi, seed)
     best_f = ackley(best_x)
     used = 1
     step = 0.000625 * span
+    sweeps = productive_sweeps = contractions = accepted_moves = 0
     while used + 2 * dimension <= budget and step > 1e-13 * span:
         improved = False
+        sweeps += 1
         for axis in range(dimension):
             for sign in (-1.0, 1.0):
                 cand = best_x.copy()
@@ -46,9 +48,13 @@ def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int]:
                 if val < best_f:
                     best_x, best_f = cand, val
                     improved = True
+                    accepted_moves += 1
         if not improved:
             step *= 0.25
-    return float(best_f), int(used)
+            contractions += 1
+        else:
+            productive_sweeps += 1
+    return float(best_f), int(used), sweeps, productive_sweeps, contractions, accepted_moves
 
 
 def compile_cpp(root: Path, output: Path) -> None:
@@ -58,12 +64,12 @@ def compile_cpp(root: Path, output: Path) -> None:
     subprocess.run(cmd, check=True)
 
 
-def run_cpp(binary: Path, dimension: int, budget: int, seed: int, repeats: int) -> tuple[float, int, float]:
+def run_cpp(binary: Path, dimension: int, budget: int, seed: int, repeats: int) -> tuple[float, int, float, int, int, int, int]:
     cp = subprocess.run([str(binary), str(dimension), str(budget), str(seed), str(repeats)], check=True, text=True, capture_output=True)
     m = re.fullmatch(r"fun=([^ ]+) evaluations=(\d+) seconds=([^ ]+) repeats=(\d+)\n?", cp.stdout)
     if not m:
         raise RuntimeError(f"unexpected C++ output: {cp.stdout!r}")
-    return float(m.group(1)), int(m.group(2)), float(m.group(3))
+    return float(m.group(1)), int(m.group(2)), float(m.group(3)), int(m.group(5)), int(m.group(6)), int(m.group(7)), int(m.group(8))
 
 
 def main() -> None:
@@ -84,10 +90,10 @@ def main() -> None:
         t0 = time.perf_counter()
         py_fun = py_evals = None
         for _ in range(a.repeats):
-            py_fun, py_evals = python_polish(dim, budget, a.seed)
+            py_fun, py_evals, py_sweeps, py_productive, py_contractions, py_moves = python_polish(dim, budget, a.seed)
         py_seconds = time.perf_counter() - t0
 
-        cpp_fun, cpp_evals, cpp_seconds = run_cpp(binary, dim, budget, a.seed, a.repeats)
+        cpp_fun, cpp_evals, cpp_seconds, cpp_sweeps, cpp_productive, cpp_contractions, cpp_moves = run_cpp(binary, dim, budget, a.seed, a.repeats)
         assert py_fun is not None and py_evals is not None
         fun_delta = abs(py_fun - cpp_fun)
         parity = py_evals == cpp_evals and fun_delta <= 1e-12 * max(1.0, abs(py_fun), abs(cpp_fun))
@@ -102,12 +108,16 @@ def main() -> None:
             "python_evaluations": py_evals,
             "cpp_evaluations": cpp_evals,
             "parity": parity,
+            "python_sweeps": py_sweeps, "cpp_sweeps": cpp_sweeps,
+            "python_productive_sweeps": py_productive, "cpp_productive_sweeps": cpp_productive,
+            "python_contractions": py_contractions, "cpp_contractions": cpp_contractions,
+            "python_accepted_moves": py_moves, "cpp_accepted_moves": cpp_moves,
             "python_seconds": py_seconds,
             "cpp_seconds": cpp_seconds,
             "speedup_python_over_cpp": speedup,
         }
         rows.append(row)
-        print(f"{dim}D parity={parity} py_evals={py_evals} cpp_evals={cpp_evals} eval_delta={cpp_evals-py_evals:+d} python={py_seconds:.6f}s cpp={cpp_seconds:.6f}s speedup={speedup:.2f}x py_fun={py_fun:.17g} cpp_fun={cpp_fun:.17g} delta={fun_delta:.3e}")
+        print(f"{dim}D parity={parity} py_evals={py_evals} cpp_evals={cpp_evals} eval_delta={cpp_evals-py_evals:+d} py_sweeps={py_sweeps} cpp_sweeps={cpp_sweeps} py_productive={py_productive} cpp_productive={cpp_productive} py_contractions={py_contractions} cpp_contractions={cpp_contractions} py_moves={py_moves} cpp_moves={cpp_moves} python={py_seconds:.6f}s cpp={cpp_seconds:.6f}s speedup={speedup:.2f}x py_fun={py_fun:.17g} cpp_fun={cpp_fun:.17g} delta={fun_delta:.3e}")
         if not parity:
             raise SystemExit(f"parity failure at {dim}D")
 
