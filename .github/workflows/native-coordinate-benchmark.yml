@@ -1,0 +1,43 @@
+name: Native Coordinate Kernel Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      repeats:
+        description: Repetitions per dimension
+        required: false
+        default: "30"
+  push:
+    branches: [develop/v0.2-core-api]
+    paths:
+      - "native/coordinate_polish_bench.cpp"
+      - "benchmarks/run_native_coordinate_benchmark.py"
+      - ".github/workflows/native-coordinate-benchmark.yml"
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+      - name: Build and benchmark parity kernel
+        run: |
+          REPEATS="${{ inputs.repeats }}"
+          if [ -z "$REPEATS" ]; then REPEATS="30"; fi
+          mkdir -p results/native-coordinate
+          python benchmarks/run_native_coordinate_benchmark.py \
+            --dimensions 10 30 100 \
+            --repeats "$REPEATS" \
+            --output results/native-coordinate/summary.csv | tee results/native-coordinate/analysis.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-coordinate-benchmark
+          path: results/native-coordinate/
+          if-no-files-found: error
