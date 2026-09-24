@@ -1,4 +1,4 @@
-"""Compare deterministic Python and C++ coordinate-polish kernels.
+"""Compare deterministic Python and C++ coordinate-polish kernels.\n\nDiagnostic revision: trajectory counters are part of the parity report.
 
 This benchmark is intentionally narrow: it measures implementation overhead for
 one hot deterministic kernel while holding objective, starting point, budget,
