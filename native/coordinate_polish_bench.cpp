@@ -14,6 +14,10 @@ struct Result {
     double fun{};
     int evaluations{};
     double seconds{};
+    int sweeps{};
+    int productive_sweeps{};
+    int contractions{};
+    int accepted_moves{};
 };
 
 static double ackley(const std::vector<double>& x) {
@@ -47,9 +51,11 @@ static Result polish_once(int dimension, int budget, int seed) {
     double best_f = ackley(best_x);
     int used = 1;
     double step = step_fraction * span;
+    int sweeps = 0, productive_sweeps = 0, contractions = 0, accepted_moves = 0;
 
     while (used + 2 * dimension <= budget && step > 1e-13 * span) {
         bool improved = false;
+        ++sweeps;
         for (int axis = 0; axis < dimension; ++axis) {
             for (double sign : {-1.0, 1.0}) {
                 std::vector<double> cand = best_x;
@@ -61,12 +67,14 @@ static Result polish_once(int dimension, int budget, int seed) {
                     best_x.swap(cand);
                     best_f = val;
                     improved = true;
+                    ++accepted_moves;
                 }
             }
         }
-        if (!improved) step *= 0.25;
+        if (!improved) { step *= 0.25; ++contractions; }
+        else { ++productive_sweeps; }
     }
-    return {best_f, used, 0.0};
+    return {best_f, used, 0.0, sweeps, productive_sweeps, contractions, accepted_moves};
 }
 
 int main(int argc, char** argv) {
@@ -90,6 +98,10 @@ int main(int argc, char** argv) {
               << "fun=" << last.fun
               << " evaluations=" << last.evaluations
               << " seconds=" << seconds
-              << " repeats=" << repeats << "\n";
+              << " repeats=" << repeats
+              << " sweeps=" << last.sweeps
+              << " productive_sweeps=" << last.productive_sweeps
+              << " contractions=" << last.contractions
+              << " accepted_moves=" << last.accepted_moves << "\n";
     return 0;
 }
