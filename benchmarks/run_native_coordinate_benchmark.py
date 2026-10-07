@@ -1,4 +1,6 @@
-"""Compare deterministic Python and C++ coordinate-polish kernels.\n\nDiagnostic revision: trajectory counters are part of the parity report.
+"""Compare deterministic Python and C++ coordinate-polish kernels.
+
+Diagnostic revision: trajectory counters are part of the parity report.
 
 This benchmark is intentionally narrow: it measures implementation overhead for
 one hot deterministic kernel while holding objective, starting point, budget,
@@ -35,7 +37,8 @@ def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int, i
     best_f = ackley(best_x)
     used = 1
     step = 0.000625 * span
-    sweeps = productive_sweeps = contractions = accepted_moves = 0\n    moves_by_sweep: list[int] = []
+    sweeps = productive_sweeps = contractions = accepted_moves = 0
+    moves_by_sweep: list[int] = []
     while used + 2 * dimension <= budget and step > 1e-13 * span:
         improved = False
         sweeps += 1
@@ -48,7 +51,8 @@ def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int, i
                 if val < best_f:
                     best_x, best_f = cand, val
                     improved = True
-                    accepted_moves += 1\n                    sweep_moves += 1
+                    accepted_moves += 1
+                    sweep_moves += 1
         if not improved:
             step *= 0.25
             contractions += 1
@@ -66,10 +70,12 @@ def compile_cpp(root: Path, output: Path) -> None:
 
 def run_cpp(binary: Path, dimension: int, budget: int, seed: int, repeats: int) -> tuple[float, int, float, int, int, int, int, list[int]]:
     cp = subprocess.run([str(binary), str(dimension), str(budget), str(seed), str(repeats)], check=True, text=True, capture_output=True)
-    m = re.fullmatch(r"fun=([^ ]+) evaluations=(\d+) seconds=([^ ]+) repeats=(\d+) sweeps=(\d+) productive_sweeps=(\d+) contractions=(\d+) accepted_moves=(\d+)\n?", cp.stdout)
+    m = re.fullmatch(r"fun=([^ ]+) evaluations=(\d+) seconds=([^ ]+) repeats=(\d+) sweeps=(\d+) productive_sweeps=(\d+) contractions=(\d+) accepted_moves=(\d+)
+?", cp.stdout)
     if not m:
         raise RuntimeError(f"unexpected C++ output: {cp.stdout!r}")
-    cpp_moves_by_sweep = [int(v) for v in lines[1].split("=", 1)[1].split(",") if v]\n    return float(m.group(1)), int(m.group(2)), float(m.group(3)), int(m.group(5)), int(m.group(6)), int(m.group(7)), int(m.group(8)), cpp_moves_by_sweep
+    cpp_moves_by_sweep = [int(v) for v in lines[1].split("=", 1)[1].split(",") if v]
+    return float(m.group(1)), int(m.group(2)), float(m.group(3)), int(m.group(5)), int(m.group(6)), int(m.group(7)), int(m.group(8)), cpp_moves_by_sweep
 
 
 def main() -> None:
