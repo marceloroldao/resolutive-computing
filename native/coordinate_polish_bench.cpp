@@ -18,6 +18,7 @@ struct Result {
     int productive_sweeps{};
     int contractions{};
     int accepted_moves{};
+    std::vector<int> moves_by_sweep{};
 };
 
 static double ackley(const std::vector<double>& x) {
@@ -51,10 +52,12 @@ static Result polish_once(int dimension, int budget, int seed) {
     double best_f = ackley(best_x);
     int used = 1;
     double step = step_fraction * span;
-    int sweeps = 0, productive_sweeps = 0, contractions = 0, accepted_moves = 0;\n    std::vector<int> moves_by_sweep;
+    int sweeps = 0, productive_sweeps = 0, contractions = 0, accepted_moves = 0;
+    std::vector<int> moves_by_sweep;
 
     while (used + 2 * dimension <= budget && step > 1e-13 * span) {
         bool improved = false;
+        int sweep_moves = 0;
         ++sweeps;
         for (int axis = 0; axis < dimension; ++axis) {
             for (double sign : {-1.0, 1.0}) {
@@ -67,19 +70,22 @@ static Result polish_once(int dimension, int budget, int seed) {
                     best_x.swap(cand);
                     best_f = val;
                     improved = true;
-                    ++accepted_moves;\n                    ++sweep_moves;
+                    ++accepted_moves;
+                    ++sweep_moves;
                 }
             }
         }
         if (!improved) { step *= 0.25; ++contractions; }
         else { ++productive_sweeps; }
+        moves_by_sweep.push_back(sweep_moves);
     }
-    return {best_f, used, 0.0, sweeps, productive_sweeps, contractions, accepted_moves};
+    return {best_f, used, 0.0, sweeps, productive_sweeps, contractions, accepted_moves, moves_by_sweep};
 }
 
 int main(int argc, char** argv) {
     if (argc != 5) {
-        std::cerr << "usage: coordinate_polish_bench DIM BUDGET SEED REPEATS\n";
+        std::cerr << "usage: coordinate_polish_bench DIM BUDGET SEED REPEATS
+";
         return 2;
     }
     const int dimension = std::stoi(argv[1]);
@@ -102,6 +108,7 @@ int main(int argc, char** argv) {
               << " sweeps=" << last.sweeps
               << " productive_sweeps=" << last.productive_sweeps
               << " contractions=" << last.contractions
-              << " accepted_moves=" << last.accepted_moves << "\n";
+              << " accepted_moves=" << last.accepted_moves << "
+";
     return 0;
 }
