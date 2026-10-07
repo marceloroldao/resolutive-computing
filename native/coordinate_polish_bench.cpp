@@ -51,7 +51,7 @@ static Result polish_once(int dimension, int budget, int seed) {
     double best_f = ackley(best_x);
     int used = 1;
     double step = step_fraction * span;
-    int sweeps = 0, productive_sweeps = 0, contractions = 0, accepted_moves = 0;
+    int sweeps = 0, productive_sweeps = 0, contractions = 0, accepted_moves = 0;\n    std::vector<int> moves_by_sweep;
 
     while (used + 2 * dimension <= budget && step > 1e-13 * span) {
         bool improved = false;
@@ -67,7 +67,7 @@ static Result polish_once(int dimension, int budget, int seed) {
                     best_x.swap(cand);
                     best_f = val;
                     improved = true;
-                    ++accepted_moves;
+                    ++accepted_moves;\n                    ++sweep_moves;
                 }
             }
         }
