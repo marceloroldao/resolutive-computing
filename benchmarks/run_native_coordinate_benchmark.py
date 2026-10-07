@@ -28,14 +28,14 @@ def initial_point(dimension: int, lo: float, hi: float, seed: int) -> np.ndarray
     return np.asarray([lo + span * (((i * 37 + seed * 101 + 17) % 1000) / 999.0) for i in range(dimension)], dtype=float)
 
 
-def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int, int, int, int, int]:
+def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int, int, int, int, int, list[int]]:
     lo, hi = -32.768, 32.768
     span = hi - lo
     best_x = initial_point(dimension, lo, hi, seed)
     best_f = ackley(best_x)
     used = 1
     step = 0.000625 * span
-    sweeps = productive_sweeps = contractions = accepted_moves = 0
+    sweeps = productive_sweeps = contractions = accepted_moves = 0\n    moves_by_sweep: list[int] = []
     while used + 2 * dimension <= budget and step > 1e-13 * span:
         improved = False
         sweeps += 1
@@ -48,7 +48,7 @@ def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int, i
                 if val < best_f:
                     best_x, best_f = cand, val
                     improved = True
-                    accepted_moves += 1
+                    accepted_moves += 1\n                    sweep_moves += 1
         if not improved:
             step *= 0.25
             contractions += 1
@@ -90,7 +90,7 @@ def main() -> None:
         t0 = time.perf_counter()
         py_fun = py_evals = None
         for _ in range(a.repeats):
-            py_fun, py_evals, py_sweeps, py_productive, py_contractions, py_moves = python_polish(dim, budget, a.seed)
+            py_fun, py_evals, py_sweeps, py_productive, py_contractions, py_moves, py_moves_by_sweep = python_polish(dim, budget, a.seed)
         py_seconds = time.perf_counter() - t0
 
         cpp_fun, cpp_evals, cpp_seconds, cpp_sweeps, cpp_productive, cpp_contractions, cpp_moves = run_cpp(binary, dim, budget, a.seed, a.repeats)
