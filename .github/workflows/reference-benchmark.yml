@@ -1,0 +1,55 @@
+name: Reference Benchmark
+
+on:
+  push:
+    branches: [agent/initial-framework]
+    paths:
+      - '.github/workflows/reference-benchmark.yml'
+      - 'benchmarks/**'
+      - 'src/resolutive/optimization/**'
+      - 'src/resolutive/benchmarks/**'
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[bench]"
+      - name: Run controlled 10D campaign
+        run: |
+          mkdir -p results/reference-campaign-10d
+          python benchmarks/run_classical.py \
+            --dimension 10 \
+            --budget 3000 \
+            --seeds 8 \
+            --output results/reference-campaign-10d/summary.csv
+      - name: Record provenance
+        run: |
+          python - <<'PY'
+          import json, os, platform
+          from pathlib import Path
+          meta = {
+              'campaign': 'reference-campaign-10d',
+              'commit': os.environ.get('GITHUB_SHA', 'unknown'),
+              'python': platform.python_version(),
+              'dimension': 10,
+              'budget': 3000,
+              'seeds': list(range(8)),
+              'optimizers': ['RandomSearch','SimulatedAnnealing','DifferentialEvolution','RO-V2','RO-V5'],
+              'benchmarks': ['ackley','rastrigin','rosenbrock'],
+              'status': 'experimental',
+              'claim_policy': 'No state-of-the-art superiority claim from this campaign alone.'
+          }
+          Path('results/reference-campaign-10d/manifest.json').write_text(json.dumps(meta, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reference-campaign-10d
+          path: results/reference-campaign-10d/
+          if-no-files-found: error

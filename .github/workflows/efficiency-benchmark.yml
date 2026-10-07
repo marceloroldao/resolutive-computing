@@ -1,0 +1,80 @@
+name: V1 Efficiency Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      seeds:
+        description: Number of seeds per benchmark/method
+        required: false
+        default: "10"
+      dimensions:
+        description: Space-separated dimensions
+        required: false
+        default: "2 10 30"
+  push:
+    branches: [develop/v0.2-core-api]
+    paths:
+      - ".github/workflows/efficiency-benchmark.yml"
+      - "benchmarks/run_efficiency_benchmark.py"
+      - "benchmarks/run_release_benchmark.py"
+      - "src/resolutive/**"
+      - "pyproject.toml"
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -e ".[bench]"
+      - name: Run efficiency benchmark
+        run: |
+          DIMENSIONS="${{ inputs.dimensions }}"
+          SEEDS="${{ inputs.seeds }}"
+          if [ -z "$DIMENSIONS" ]; then DIMENSIONS="2 10 30"; fi
+          if [ -z "$SEEDS" ]; then SEEDS="10"; fi
+          python benchmarks/run_efficiency_benchmark.py \
+            --dimensions $DIMENSIONS \
+            --seeds $SEEDS \
+            --raw-output results/efficiency-benchmark-v1/raw.csv \
+            --summary-output results/efficiency-benchmark-v1/summary.csv
+          python - <<'PY'
+          import json, os, platform
+          from importlib.metadata import version
+          from pathlib import Path
+          out = Path('results/efficiency-benchmark-v1')
+          manifest = {
+              'commit': os.environ.get('GITHUB_SHA'),
+              'run_id': os.environ.get('GITHUB_RUN_ID'),
+              'runner_os': os.environ.get('RUNNER_OS'),
+              'runner_arch': os.environ.get('RUNNER_ARCH'),
+              'python': platform.python_version(),
+              'platform': platform.platform(),
+              'numpy': version('numpy'),
+              'scipy': version('scipy'),
+              'cma': version('cma'),
+              'psutil': version('psutil'),
+              'dimensions': os.environ.get('DIMENSIONS', ''),
+              'seeds': os.environ.get('SEEDS', ''),
+              'budget_rule': 'max(1000, 300 * dimension)',
+              'metrics': ['objective', 'evaluations', 'evals_to_1e-2', 'evals_to_1e-6', 'wall_time_s', 'cpu_time_s', 'rss_delta_bytes'],
+              'note': 'wall time and RSS are infrastructure-sensitive; compare within the same runner/campaign',
+          }
+          (out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          PY
+          echo '=== V1 EFFICIENCY BENCHMARK SUMMARY ==='
+          cat results/efficiency-benchmark-v1/summary.csv
+        env:
+          DIMENSIONS: ${{ inputs.dimensions }}
+          SEEDS: ${{ inputs.seeds }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: efficiency-benchmark-v1
+          path: results/efficiency-benchmark-v1/
+          if-no-files-found: error

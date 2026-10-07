@@ -1,0 +1,51 @@
+name: Adaptive Refinement V1 Experiment
+
+on:
+  workflow_dispatch:
+    inputs:
+      seeds:
+        description: Number of seeds per scenario
+        required: false
+        default: "10"
+  push:
+    branches: [develop/v0.2-core-api]
+    paths:
+      - "experiments/adaptive_refinement_v1.py"
+      - "experiments/benchmark_adaptive_refinement_v1.py"
+      - ".github/workflows/adaptive-refinement-v1.yml"
+      - "src/resolutive/optimization/hybrid_regime.py"
+      - "src/resolutive/optimization/hybrid_multires.py"
+      - "src/resolutive/benchmarks/functions.py"
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install benchmark dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[bench]"
+      - name: Run adaptive refinement experiment
+        run: |
+          SEEDS="${{ inputs.seeds }}"
+          if [ -z "$SEEDS" ]; then SEEDS="10"; fi
+          mkdir -p results/adaptive-refinement-v1
+          python experiments/benchmark_adaptive_refinement_v1.py \
+            --dimensions 2 10 30 \
+            --seeds "$SEEDS" \
+            --raw-output results/adaptive-refinement-v1/raw.csv \
+            --summary-output results/adaptive-refinement-v1/summary.csv | tee results/adaptive-refinement-v1/analysis.txt
+          echo '=== SUMMARY ==='
+          cat results/adaptive-refinement-v1/summary.csv
+        env:
+          PYTHONPATH: experiments
+      - uses: actions/upload-artifact@v4
+        with:
+          name: adaptive-refinement-v1
+          path: results/adaptive-refinement-v1/
+          if-no-files-found: error

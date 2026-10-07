@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "experiment_id": "reference-v0.1",
+  "status": "experimental",
+  "rsms_compatibility": "1.0-rc.1",
+  "benchmarks": ["ackley", "rastrigin", "rosenbrock"],
+  "optimizers": ["RandomSearch", "SimulatedAnnealing", "DifferentialEvolution", "RO-V2", "RO-V5"],
+  "dimensions": [10, 20, 30, 50],
+  "classical_budget": 6000,
+  "scaling_budget_per_dimension": 600,
+  "seeds": 16,
+  "seed_policy": "integer seeds 0..15 inclusive",
+  "metrics": ["median", "mean", "std", "best", "worst", "max_evaluations_used"],
+  "ablation": {
+    "optimizer": "RO-V5",
+    "switches": ["use_memory", "use_golden_rotation", "use_escape", "use_reanchor", "use_collapse"]
+  },
+  "claim_policy": "No superiority claim may be made from this configuration alone; external standardized benchmarks and stronger baselines are required before publication claims."
+}
