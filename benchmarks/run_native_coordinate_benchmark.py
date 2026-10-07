@@ -41,6 +41,7 @@ def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int, i
     moves_by_sweep: list[int] = []
     while used + 2 * dimension <= budget and step > 1e-13 * span:
         improved = False
+        sweep_moves = 0
         sweeps += 1
         for axis in range(dimension):
             for sign in (-1.0, 1.0):
@@ -58,8 +59,8 @@ def python_polish(dimension: int, budget: int, seed: int) -> tuple[float, int, i
             contractions += 1
         else:
             productive_sweeps += 1
-    return float(best_f), int(used), sweeps, productive_sweeps, contractions, accepted_moves
-
+        moves_by_sweep.append(sweep_moves)
+    return float(best_f), int(used), sweeps, productive_sweeps, contractions, accepted_moves, moves_by_sweep
 
 def compile_cpp(root: Path, output: Path) -> None:
     source = root / "native" / "coordinate_polish_bench.cpp"
@@ -70,13 +71,12 @@ def compile_cpp(root: Path, output: Path) -> None:
 
 def run_cpp(binary: Path, dimension: int, budget: int, seed: int, repeats: int) -> tuple[float, int, float, int, int, int, int, list[int]]:
     cp = subprocess.run([str(binary), str(dimension), str(budget), str(seed), str(repeats)], check=True, text=True, capture_output=True)
-    m = re.fullmatch(r"fun=([^ ]+) evaluations=(\d+) seconds=([^ ]+) repeats=(\d+) sweeps=(\d+) productive_sweeps=(\d+) contractions=(\d+) accepted_moves=(\d+)
-?", cp.stdout)
-    if not m:
+    lines = cp.stdout.strip().splitlines()
+    m = re.fullmatch(r"fun=([^ ]+) evaluations=(\d+) seconds=([^ ]+) repeats=(\d+) sweeps=(\d+) productive_sweeps=(\d+) contractions=(\d+) accepted_moves=(\d+)", lines[0] if lines else "")
+    if not m or len(lines) != 2 or not lines[1].startswith("moves_by_sweep="):
         raise RuntimeError(f"unexpected C++ output: {cp.stdout!r}")
     cpp_moves_by_sweep = [int(v) for v in lines[1].split("=", 1)[1].split(",") if v]
     return float(m.group(1)), int(m.group(2)), float(m.group(3)), int(m.group(5)), int(m.group(6)), int(m.group(7)), int(m.group(8)), cpp_moves_by_sweep
-
 
 def main() -> None:
     p = argparse.ArgumentParser()
