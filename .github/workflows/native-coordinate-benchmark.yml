@@ -28,7 +28,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e .
       - name: Build and benchmark parity kernel
+        shell: bash
         run: |
+          set -o pipefail
           REPEATS="${{ inputs.repeats }}"
           if [ -z "$REPEATS" ]; then REPEATS="30"; fi
           mkdir -p results/native-coordinate
