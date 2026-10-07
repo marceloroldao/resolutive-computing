@@ -64,12 +64,12 @@ def compile_cpp(root: Path, output: Path) -> None:
     subprocess.run(cmd, check=True)
 
 
-def run_cpp(binary: Path, dimension: int, budget: int, seed: int, repeats: int) -> tuple[float, int, float, int, int, int, int]:
+def run_cpp(binary: Path, dimension: int, budget: int, seed: int, repeats: int) -> tuple[float, int, float, int, int, int, int, list[int]]:
     cp = subprocess.run([str(binary), str(dimension), str(budget), str(seed), str(repeats)], check=True, text=True, capture_output=True)
     m = re.fullmatch(r"fun=([^ ]+) evaluations=(\d+) seconds=([^ ]+) repeats=(\d+) sweeps=(\d+) productive_sweeps=(\d+) contractions=(\d+) accepted_moves=(\d+)\n?", cp.stdout)
     if not m:
         raise RuntimeError(f"unexpected C++ output: {cp.stdout!r}")
-    return float(m.group(1)), int(m.group(2)), float(m.group(3)), int(m.group(5)), int(m.group(6)), int(m.group(7)), int(m.group(8))
+    cpp_moves_by_sweep = [int(v) for v in lines[1].split("=", 1)[1].split(",") if v]\n    return float(m.group(1)), int(m.group(2)), float(m.group(3)), int(m.group(5)), int(m.group(6)), int(m.group(7)), int(m.group(8)), cpp_moves_by_sweep
 
 
 def main() -> None:
@@ -93,7 +93,7 @@ def main() -> None:
             py_fun, py_evals, py_sweeps, py_productive, py_contractions, py_moves, py_moves_by_sweep = python_polish(dim, budget, a.seed)
         py_seconds = time.perf_counter() - t0
 
-        cpp_fun, cpp_evals, cpp_seconds, cpp_sweeps, cpp_productive, cpp_contractions, cpp_moves = run_cpp(binary, dim, budget, a.seed, a.repeats)
+        cpp_fun, cpp_evals, cpp_seconds, cpp_sweeps, cpp_productive, cpp_contractions, cpp_moves, cpp_moves_by_sweep = run_cpp(binary, dim, budget, a.seed, a.repeats)
         assert py_fun is not None and py_evals is not None
         fun_delta = abs(py_fun - cpp_fun)
         parity = py_evals == cpp_evals and fun_delta <= 1e-12 * max(1.0, abs(py_fun), abs(cpp_fun))
