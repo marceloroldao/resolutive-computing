@@ -1,0 +1,1743 @@
+{
+  "status": "SEARCH_WINNER_FULL_NATIVE_PASS",
+  "protocol": {
+    "methods": [
+      "RO-V2",
+      "RO-auto",
+      "random",
+      "differential_evolution"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "budget_per_method_seed": 1024,
+    "includes_common_incumbent": true,
+    "duplicate_calls_count": true,
+    "training_points": 1428,
+    "bounds": [
+      [
+        11,
+        14,
+        25,
+        25,
+        26
+      ],
+      [
+        18,
+        19,
+        31,
+        31,
+        32
+      ]
+    ],
+    "representation": "continuous [0,1]^5 rounded to precision integers",
+    "objective": "sampled Q*C including rotation synthesis; sampled margin can be optimistic",
+    "validation": "one training-selected configuration per method/seed; full domain; no feedback",
+    "clocks": "cache is shared; wall times cannot support comparative speed claims"
+  },
+  "runs": [
+    {
+      "method": "RO-V2",
+      "seed": 0,
+      "calls": 1024,
+      "distinct_configurations": 517,
+      "search_seconds": 1.3933135070000162,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 0,
+      "calls": 1024,
+      "distinct_configurations": 320,
+      "search_seconds": 0.47094744499997887,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 0,
+      "calls": 1024,
+      "distinct_configurations": 979,
+      "search_seconds": 1.2220428979999838,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          30
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.8916630697473088,
+        "objective": 1693114.9807210495,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          30
+        ],
+        "inputs": 3133452,
+        "failures": 447,
+        "worst_error_over_tolerance": 1.2918633541954074,
+        "worst_x": 1044607,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 0,
+      "calls": 1024,
+      "distinct_configurations": 370,
+      "search_seconds": 0.4344438640000021,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-V2",
+      "seed": 1,
+      "calls": 1024,
+      "distinct_configurations": 446,
+      "search_seconds": 0.5652371410000114,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          28,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1639357.6325824705,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          28,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 2,
+        "worst_error_over_tolerance": 1.0091471313559077,
+        "worst_x": 555965,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 1,
+      "calls": 1024,
+      "distinct_configurations": 278,
+      "search_seconds": 0.25837230299998737,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 1,
+      "calls": 1024,
+      "distinct_configurations": 986,
+      "search_seconds": 1.1075939629999993,
+      "selected": {
+        "configuration": [
+          14,
+          17,
+          29,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.7025344285547981,
+        "objective": 1663760.9373465918,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          14,
+          17,
+          29,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 0,
+        "worst_error_over_tolerance": 0.9675474814881844,
+        "worst_x": 2223852,
+        "full_model_cost": 1667594.9801412383,
+        "structure": {
+          "qubits": 238,
+          "toffolis": 6742,
+          "t_gates": 1,
+          "rotations": 36
+        },
+        "minimum_margin_uint64": 23927388
+      },
+      "retained_cost": 1667594.9801412383
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 1,
+      "calls": 1024,
+      "distinct_configurations": 393,
+      "search_seconds": 0.31182070799999906,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-V2",
+      "seed": 2,
+      "calls": 1024,
+      "distinct_configurations": 484,
+      "search_seconds": 0.4280594360000123,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 2,
+      "calls": 1024,
+      "distinct_configurations": 293,
+      "search_seconds": 0.22210185800000204,
+      "selected": {
+        "configuration": [
+          14,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.8319657333166093,
+        "objective": 1633101.7795505123,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          14,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 15,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 2,
+      "calls": 1024,
+      "distinct_configurations": 990,
+      "search_seconds": 0.9526793809999958,
+      "selected": {
+        "configuration": [
+          15,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.8319657333166093,
+        "objective": 1650093.7795505123,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          15,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 15,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 2,
+      "calls": 1024,
+      "distinct_configurations": 532,
+      "search_seconds": 0.3399046460000079,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-V2",
+      "seed": 3,
+      "calls": 1024,
+      "distinct_configurations": 417,
+      "search_seconds": 0.3189832850000016,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 3,
+      "calls": 1024,
+      "distinct_configurations": 259,
+      "search_seconds": 0.12623368200002005,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 3,
+      "calls": 1024,
+      "distinct_configurations": 981,
+      "search_seconds": 0.8395777190000047,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          28,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1639357.6325824705,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          28,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 2,
+        "worst_error_over_tolerance": 1.0091471313559077,
+        "worst_x": 555965,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 3,
+      "calls": 1024,
+      "distinct_configurations": 557,
+      "search_seconds": 0.30843876000000137,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-V2",
+      "seed": 4,
+      "calls": 1024,
+      "distinct_configurations": 432,
+      "search_seconds": 0.34887668499999336,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 4,
+      "calls": 1024,
+      "distinct_configurations": 306,
+      "search_seconds": 0.15914082300000132,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 4,
+      "calls": 1024,
+      "distinct_configurations": 976,
+      "search_seconds": 0.6732916059999923,
+      "selected": {
+        "configuration": [
+          15,
+          17,
+          28,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.7209729395535734,
+        "objective": 1671938.3451728667,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          15,
+          17,
+          28,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 0,
+        "worst_error_over_tolerance": 0.9675474814881844,
+        "worst_x": 2223852,
+        "full_model_cost": 1675756.2785440064,
+        "structure": {
+          "qubits": 237,
+          "toffolis": 6806,
+          "t_gates": 1,
+          "rotations": 36
+        },
+        "minimum_margin_uint64": 23927388
+      },
+      "retained_cost": 1675756.2785440064
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 4,
+      "calls": 1024,
+      "distinct_configurations": 417,
+      "search_seconds": 0.20127748900000597,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-V2",
+      "seed": 5,
+      "calls": 1024,
+      "distinct_configurations": 491,
+      "search_seconds": 0.24649891299998217,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 5,
+      "calls": 1024,
+      "distinct_configurations": 276,
+      "search_seconds": 0.11487296100000322,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 5,
+      "calls": 1024,
+      "distinct_configurations": 979,
+      "search_seconds": 0.6241269150000051,
+      "selected": {
+        "configuration": [
+          14,
+          17,
+          27,
+          27,
+          29
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.858721923167489,
+        "objective": 1668967.8949038826,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          14,
+          17,
+          27,
+          27,
+          29
+        ],
+        "inputs": 3133452,
+        "failures": 175,
+        "worst_error_over_tolerance": 1.2294817517473249,
+        "worst_x": 1044607,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 5,
+      "calls": 1024,
+      "distinct_configurations": 354,
+      "search_seconds": 0.11029381600002353,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-V2",
+      "seed": 6,
+      "calls": 1024,
+      "distinct_configurations": 490,
+      "search_seconds": 0.206235630000009,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 6,
+      "calls": 1024,
+      "distinct_configurations": 302,
+      "search_seconds": 0.11581928399999697,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 6,
+      "calls": 1024,
+      "distinct_configurations": 990,
+      "search_seconds": 0.5571104459999958,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          28,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1639357.6325824705,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          28,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 2,
+        "worst_error_over_tolerance": 1.0091471313559077,
+        "worst_x": 555965,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 6,
+      "calls": 1024,
+      "distinct_configurations": 436,
+      "search_seconds": 0.12410554499999193,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-V2",
+      "seed": 7,
+      "calls": 1024,
+      "distinct_configurations": 503,
+      "search_seconds": 0.20515782100000024,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 7,
+      "calls": 1024,
+      "distinct_configurations": 286,
+      "search_seconds": 0.08945917799999847,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 7,
+      "calls": 1024,
+      "distinct_configurations": 973,
+      "search_seconds": 0.5119172380000236,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          29
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.858721923167489,
+        "objective": 1650879.8949038826,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          29
+        ],
+        "inputs": 3133452,
+        "failures": 175,
+        "worst_error_over_tolerance": 1.2294817517473249,
+        "worst_x": 1044607,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 7,
+      "calls": 1024,
+      "distinct_configurations": 443,
+      "search_seconds": 0.16449062600000275,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-V2",
+      "seed": 8,
+      "calls": 1024,
+      "distinct_configurations": 483,
+      "search_seconds": 0.2123273140000208,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 8,
+      "calls": 1024,
+      "distinct_configurations": 279,
+      "search_seconds": 0.09470590700001935,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          28,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1639357.6325824705,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          28,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 2,
+        "worst_error_over_tolerance": 1.0091471313559077,
+        "worst_x": 555965,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 8,
+      "calls": 1024,
+      "distinct_configurations": 969,
+      "search_seconds": 0.49801614200001154,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 8,
+      "calls": 1024,
+      "distinct_configurations": 476,
+      "search_seconds": 0.14986730699999384,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-V2",
+      "seed": 9,
+      "calls": 1024,
+      "distinct_configurations": 380,
+      "search_seconds": 0.1654881800000112,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "RO-auto",
+      "seed": 9,
+      "calls": 1024,
+      "distinct_configurations": 282,
+      "search_seconds": 0.07869581099998868,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    },
+    {
+      "method": "random",
+      "seed": 9,
+      "calls": 1024,
+      "distinct_configurations": 984,
+      "search_seconds": 0.3894529339999906,
+      "selected": {
+        "configuration": [
+          14,
+          17,
+          29,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.7025344285547981,
+        "objective": 1663760.9373465918,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          14,
+          17,
+          29,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 0,
+        "worst_error_over_tolerance": 0.9675474814881844,
+        "worst_x": 2223852,
+        "full_model_cost": 1667594.9801412383,
+        "structure": {
+          "qubits": 238,
+          "toffolis": 6742,
+          "t_gates": 1,
+          "rotations": 36
+        },
+        "minimum_margin_uint64": 23927388
+      },
+      "retained_cost": 1667594.9801412383
+    },
+    {
+      "method": "differential_evolution",
+      "seed": 9,
+      "calls": 1024,
+      "distinct_configurations": 344,
+      "search_seconds": 0.08448385399998415,
+      "selected": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "sample_failures": 0,
+        "sample_worst_ratio": 0.9300833941777445,
+        "objective": 1616392.5117698864,
+        "sample_feasible": true
+      },
+      "selected_full_model": {
+        "configuration": [
+          13,
+          17,
+          27,
+          27,
+          28
+        ],
+        "inputs": 3133452,
+        "failures": 17,
+        "worst_error_over_tolerance": 1.0959148471831404,
+        "worst_x": 1044587,
+        "full_model_cost": null
+      },
+      "retained_cost": 1728155.5475123546
+    }
+  ],
+  "full_model_results": [
+    {
+      "configuration": [
+        14,
+        17,
+        28,
+        28,
+        29
+      ],
+      "inputs": 3133452,
+      "failures": 0,
+      "worst_error_over_tolerance": 0.8845736010531553,
+      "worst_x": 2223871,
+      "full_model_cost": 1728155.5475123546,
+      "structure": {
+        "qubits": 241,
+        "toffolis": 6908,
+        "t_gates": 1,
+        "rotations": 37
+      },
+      "minimum_margin_uint64": 85104040
+    },
+    {
+      "configuration": [
+        13,
+        17,
+        27,
+        27,
+        28
+      ],
+      "inputs": 3133452,
+      "failures": 17,
+      "worst_error_over_tolerance": 1.0959148471831404,
+      "worst_x": 1044587,
+      "full_model_cost": null
+    },
+    {
+      "configuration": [
+        13,
+        17,
+        27,
+        27,
+        30
+      ],
+      "inputs": 3133452,
+      "failures": 447,
+      "worst_error_over_tolerance": 1.2918633541954074,
+      "worst_x": 1044607,
+      "full_model_cost": null
+    },
+    {
+      "configuration": [
+        13,
+        17,
+        28,
+        27,
+        28
+      ],
+      "inputs": 3133452,
+      "failures": 2,
+      "worst_error_over_tolerance": 1.0091471313559077,
+      "worst_x": 555965,
+      "full_model_cost": null
+    },
+    {
+      "configuration": [
+        14,
+        17,
+        29,
+        27,
+        28
+      ],
+      "inputs": 3133452,
+      "failures": 0,
+      "worst_error_over_tolerance": 0.9675474814881844,
+      "worst_x": 2223852,
+      "full_model_cost": 1667594.9801412383,
+      "structure": {
+        "qubits": 238,
+        "toffolis": 6742,
+        "t_gates": 1,
+        "rotations": 36
+      },
+      "minimum_margin_uint64": 23927388
+    },
+    {
+      "configuration": [
+        14,
+        17,
+        27,
+        27,
+        28
+      ],
+      "inputs": 3133452,
+      "failures": 15,
+      "worst_error_over_tolerance": 1.0959148471831404,
+      "worst_x": 1044587,
+      "full_model_cost": null
+    },
+    {
+      "configuration": [
+        15,
+        17,
+        27,
+        27,
+        28
+      ],
+      "inputs": 3133452,
+      "failures": 15,
+      "worst_error_over_tolerance": 1.0959148471831404,
+      "worst_x": 1044587,
+      "full_model_cost": null
+    },
+    {
+      "configuration": [
+        15,
+        17,
+        28,
+        27,
+        28
+      ],
+      "inputs": 3133452,
+      "failures": 0,
+      "worst_error_over_tolerance": 0.9675474814881844,
+      "worst_x": 2223852,
+      "full_model_cost": 1675756.2785440064,
+      "structure": {
+        "qubits": 237,
+        "toffolis": 6806,
+        "t_gates": 1,
+        "rotations": 36
+      },
+      "minimum_margin_uint64": 23927388
+    },
+    {
+      "configuration": [
+        14,
+        17,
+        27,
+        27,
+        29
+      ],
+      "inputs": 3133452,
+      "failures": 175,
+      "worst_error_over_tolerance": 1.2294817517473249,
+      "worst_x": 1044607,
+      "full_model_cost": null
+    },
+    {
+      "configuration": [
+        13,
+        17,
+        27,
+        27,
+        29
+      ],
+      "inputs": 3133452,
+      "failures": 175,
+      "worst_error_over_tolerance": 1.2294817517473249,
+      "worst_x": 1044607,
+      "full_model_cost": null
+    }
+  ],
+  "native_verification": {
+    "status": "PASS",
+    "score": 1667594.9801412383,
+    "toffoli_equivalent": 7006.701597232094,
+    "toffoli_count": 6742,
+    "max_toffoli_count": 6742,
+    "t_count": 1,
+    "rotation_count": 36,
+    "rotation_eps": 1.1319387864153341e-13,
+    "num_qubits": 238,
+    "reaction_depth": 3485,
+    "num_ops": 54515,
+    "verified_shots": 200540928,
+    "worst_error_over_tolerance": 0.9675474814881844,
+    "worst_x": 2223852,
+    "circuit_sha256": "b24fd504c98332dda75537445e04256f24ba6eafa57d1d7885cbb451527fe571",
+    "wall_seconds": 801.8986005720001,
+    "returncode": 0
+  },
+  "new_physics_tested": false,
+  "leaderboard_rank_established": false,
+  "statistics": {
+    "RO-V2": {
+      "median": 1728155.5475123546,
+      "mean": 1728155.5475123548,
+      "std": 2.3283064365386963e-10,
+      "best": 1728155.5475123546,
+      "worst": 1728155.5475123546,
+      "selected_full_domain_failures": 10
+    },
+    "RO-auto": {
+      "median": 1728155.5475123546,
+      "mean": 1728155.5475123548,
+      "std": 2.3283064365386963e-10,
+      "best": 1728155.5475123546,
+      "worst": 1728155.5475123546,
+      "selected_full_domain_failures": 10
+    },
+    "random": {
+      "median": 1728155.5475123546,
+      "mean": 1710803.5071412965,
+      "std": 26589.31172229177,
+      "best": 1667594.9801412383,
+      "worst": 1728155.5475123546,
+      "selected_full_domain_failures": 7
+    },
+    "differential_evolution": {
+      "median": 1728155.5475123546,
+      "mean": 1728155.5475123548,
+      "std": 2.3283064365386963e-10,
+      "best": 1728155.5475123546,
+      "worst": 1728155.5475123546,
+      "selected_full_domain_failures": 10
+    }
+  },
+  "paired_ro_wins": {
+    "RO-V2 vs random": {
+      "wins": 0,
+      "ties": 7,
+      "losses": 3
+    },
+    "RO-V2 vs differential_evolution": {
+      "wins": 0,
+      "ties": 10,
+      "losses": 0
+    },
+    "RO-auto vs random": {
+      "wins": 0,
+      "ties": 7,
+      "losses": 3
+    },
+    "RO-auto vs differential_evolution": {
+      "wins": 0,
+      "ties": 10,
+      "losses": 0
+    }
+  },
+  "incumbent_cost": 1728155.5475123546,
+  "best_full_model": {
+    "configuration": [
+      14,
+      17,
+      29,
+      27,
+      28
+    ],
+    "inputs": 3133452,
+    "failures": 0,
+    "worst_error_over_tolerance": 0.9675474814881844,
+    "worst_x": 2223852,
+    "full_model_cost": 1667594.9801412383,
+    "structure": {
+      "qubits": 238,
+      "toffolis": 6742,
+      "t_gates": 1,
+      "rotations": 36
+    },
+    "minimum_margin_uint64": 23927388
+  },
+  "unique_sampled_configurations": 8701,
+  "run_id": 43998133492,
+  "run_url": "https://github.com/marceloroldao/resolutive-computing/actions/runs/43998133492",
+  "artifact_url": "https://github.com/marceloroldao/resolutive-computing/actions/runs/43998133492/artifacts/14291851616",
+  "source_commit": "8025eef8deb3a94774ed46664cf50acd83cff909",
+  "measured_improvements": {
+    "reduction_vs_previous": 3.5043470165803114,
+    "reduction_vs_reference": 19.702635314481697,
+    "factor_vs_reference": 1.2453708834859818,
+    "public_gap": 17.029902784770258
+  }
+}
